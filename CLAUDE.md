@@ -80,14 +80,24 @@ docs/decisions/         # notes de décision courtes (ADR), une par choix import
 
 ## API des plateformes : contraintes connues
 
-- **Spotify** : application en Development Mode (5 utilisateurs autorisés max,
-  certains endpoints restreints depuis février 2026). Ne pas supposer qu'un endpoint
-  fonctionne : vérifier avec un spike.
-- **Deezer** : création de nouvelles applications fermée aux particuliers. Utiliser
-  uniquement ce qui marche sans clé (lecture publique), si ça marche encore.
-- **YouTube Music** : pas d'API officielle. Bibliothèque non officielle, donc
-  isoler complètement dans `providers/youtube-music/` car elle peut casser.
-- **SoundCloud** : état de l'API à vérifier. Ne pas scraper de `client_id`.
+Ordre V1 : **Deezer (source) → Spotify (destination)**.
+
+- **Deezer** : source V1, **lecture seule**. API publique sans clé (playlist, titres
+  paginés, ISRC sur chaque titre, `GET /track/isrc:{ISRC}`). Écriture impossible (création
+  d'app fermée aux particuliers). Quota ~50 requêtes / 5 s : prévoir un limiteur de débit.
+  Les erreurs arrivent en HTTP 200 avec un objet `error` : toujours valider avec Zod.
+- **Spotify** : destination V1. OAuth Authorization Code + PKCE, `POST /me/playlists`
+  puis `POST /playlists/{id}/items` (**écriture vérifiée en Development Mode le
+  27/11/2026** via `/dev/spotify`), recherche par `isrc:` (`limit` ≤ 10, pas d'appels
+  groupés `?ids=`). Comme source : **seulement les playlists de l'utilisateur connecté**
+  (ou collaboratives) ; un lien public quelconque renvoie une erreur typée « playlist non
+  accessible ». Development Mode : 5 utilisateurs max. Ne pas supposer qu'un endpoint
+  fonctionne : vérifier.
+- **YouTube Music** : 3ᵉ plateforme, après la V1 Deezer → Spotify. Pas d'API officielle :
+  lecture fragile, recherche bloquée depuis une IP de datacenter, écriture via YouTube
+  Data API v3 (quota serré). Isoler complètement dans `providers/youtube-music/`.
+- **SoundCloud** : **en pause** (enregistrer une app demande un abonnement Artist Pro).
+  Ne pas scraper de `client_id`.
 - Les résultats des spikes sont consignés dans `spikes/RESULTS.md` : s'y référer
   avant de coder un provider.
 
