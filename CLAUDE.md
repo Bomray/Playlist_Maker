@@ -87,7 +87,8 @@ Ordre V1 : **Deezer (source) → Spotify (destination)**.
   d'app fermée aux particuliers). Quota ~50 requêtes / 5 s : prévoir un limiteur de débit.
   Les erreurs arrivent en HTTP 200 avec un objet `error` : toujours valider avec Zod.
 - **Spotify** : destination V1. OAuth Authorization Code + PKCE, `POST /me/playlists`
-  puis `POST /playlists/{id}/items`, recherche par `isrc:` (`limit` ≤ 10, pas d'appels
+  puis `POST /playlists/{id}/items` (**écriture vérifiée en Development Mode le
+  27/11/2026** via `/dev/spotify`), recherche par `isrc:` (`limit` ≤ 10, pas d'appels
   groupés `?ids=`). Comme source : **seulement les playlists de l'utilisateur connecté**
   (ou collaboratives) ; un lien public quelconque renvoie une erreur typée « playlist non
   accessible ». Development Mode : 5 utilisateurs max. Ne pas supposer qu'un endpoint

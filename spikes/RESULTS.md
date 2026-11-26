@@ -11,7 +11,7 @@ Les sorties JSON brutes sont dans [`output/`](./output).
 
 | Plateforme | Lecture playlist publique | ISRC | Écriture (créer une playlist) | Contraintes principales |
 |---|---|---|---|---|
-| **Spotify** | ❌ **Non** en client credentials : métadonnées de la playlist OK, mais titres refusés (`401` sur `/items`, `403` sur `/tracks`). Avec un compte utilisateur : seulement ses propres playlists (ou collaboratives) | ✅ via `/tracks/{id}` et `/search?q=isrc:…` (testé) | ✅ probable : OAuth Authorization Code + PKCE, `POST /me/playlists` + `POST /playlists/{id}/items` (non testé, signalements de `403` en Dev Mode) | Dev Mode : 5 utilisateurs max, Premium obligatoire pour le propriétaire de l'app, `/search` limité à `limit=10`, appels groupés (`/tracks?ids=`) en `403` |
+| **Spotify** | ❌ **Non** en client credentials : métadonnées de la playlist OK, mais titres refusés (`401` sur `/items`, `403` sur `/tracks`). Avec un compte utilisateur : seulement ses propres playlists (ou collaboratives) | ✅ via `/tracks/{id}` et `/search?q=isrc:…` (testé) | ✅ **vérifié le 27/11** : OAuth Authorization Code + PKCE, `POST /me/playlists` + `POST /playlists/{id}/items` (voir la mise à jour plus bas) | Dev Mode : 5 utilisateurs max, Premium obligatoire pour le propriétaire de l'app, `/search` limité à `limit=10`, appels groupés (`/tracks?ids=`) en `403` |
 | **YouTube Music** | ⚠️ **Partielle** : titre, artistes (texte), album, durée, videoId, en lisant la réponse brute. Le parseur youtubei.js ne remplit plus les champs | ❌ jamais | ⚠️ via YouTube Data API v3 (officielle), OAuth Google, `playlists.insert` + `playlistItems.insert` = 50 unités de quota chacun (10 000/jour) | Pas d'API officielle pour YT Music. Titres « grisés » et **recherche bloquée (`403` anti-bot)** depuis une IP de datacenter |
 | **Deezer** | ✅ **Oui**, sans clé, pagination OK (62 et 363 titres) | ✅ dans chaque titre de playlist (62/62, 363/363) | ❌ OAuth avec scope `manage_library`, mais impossible de créer une app (fermé aux particuliers) | Quota ~50 requêtes / 5 s (`code 4 Quota limit exceeded` atteint pendant le spike). Erreurs renvoyées en HTTP 200 |
 | **SoundCloud** | ❌ Pas sans app officielle : `/resolve` sans auth → `401` puis `429`. oEmbed (sans clé) donne seulement le titre de la playlist | ⚠️ champ `isrc` dans l'objet track, souvent `null` (non vérifié) | ⚠️ OAuth 2.1 Authorization Code + PKCE, `POST /playlists` (non testé) | Enregistrer une app demande un abonnement **Artist Pro**. Client credentials : 50 tokens / 12 h par app, 30 / h par IP |
@@ -177,6 +177,21 @@ Pour la suite :
 - **Spotify comme source** : seulement pour les playlists de l'utilisateur connecté
   (OAuth), pas pour un lien public quelconque. Il faut l'indiquer clairement dans l'UI
   (erreur typée « playlist non accessible »).
+
+## Mise à jour du 27 novembre 2026 : écriture Spotify vérifiée
+
+Test authentifié depuis l'app (page temporaire `/dev/spotify`, IP résidentielle,
+compte déclaré dans « User Management »), en **Development Mode** :
+
+- OAuth Authorization Code + PKCE, scopes `playlist-modify-private playlist-read-private`,
+  échange du code avec l'en-tête Basic (secret défini) : OK.
+- `GET /v1/search?q=isrc:USUM71703861&type=track&limit=1` avec le token utilisateur :
+  OK (« Cut To The Feeling », Carly Rae Jepsen).
+- `POST /v1/me/playlists` (`public: false`, avec description) : OK, playlist privée créée.
+- `POST /v1/playlists/{id}/items` avec `{ "uris": ["spotify:track:…"] }` : OK, titre ajouté.
+
+Les `403` signalés par d'autres développeurs ne se produisent pas ici. **Spotify est
+confirmé comme destination V1.**
 
 ## Comment relancer
 
