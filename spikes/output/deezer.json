@@ -1,0 +1,636 @@
+{
+  "platform": "deezer",
+  "url": "https://www.deezer.com/playlist/16006480463",
+  "playlist": {
+    "id": "16006480463",
+    "name": "French rap",
+    "trackCount": 62
+  },
+  "tracks": [
+    {
+      "title": "Le cœur des filles",
+      "artists": [
+        "A2H"
+      ],
+      "album": "Rédemption",
+      "durationMs": 219000,
+      "isrc": "FRPJQ1501640",
+      "platformId": "1068757022"
+    },
+    {
+      "title": "Avec Toi",
+      "artists": [
+        "OBOY"
+      ],
+      "album": "OMEGA",
+      "durationMs": 193000,
+      "isrc": "FR9OD1900070",
+      "platformId": "708702202"
+    },
+    {
+      "title": "Las vegas",
+      "artists": [
+        "Jok'air"
+      ],
+      "album": "Jok'travolta",
+      "durationMs": 256000,
+      "isrc": "FR8FB1900980",
+      "platformId": "654839512"
+    },
+    {
+      "title": "XS",
+      "artists": [
+        "Josman"
+      ],
+      "album": "J.O.$",
+      "durationMs": 206000,
+      "isrc": "FR4DW1802300",
+      "platformId": "1331100562"
+    },
+    {
+      "title": "J'aime Bien!",
+      "artists": [
+        "Josman"
+      ],
+      "album": "J.O.$",
+      "durationMs": 192000,
+      "isrc": "FR4DW1802330",
+      "platformId": "1331100592"
+    },
+    {
+      "title": "Bonbon à la menthe",
+      "artists": [
+        "Jok'air"
+      ],
+      "album": "Jok'travolta",
+      "durationMs": 317000,
+      "isrc": "FR8FB1900950",
+      "platformId": "654839472"
+    },
+    {
+      "title": "Vérité",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "Jefe",
+      "durationMs": 199000,
+      "isrc": "FR9W12136761",
+      "platformId": "1572268772"
+    },
+    {
+      "title": "Jefe",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "Jefe",
+      "durationMs": 177000,
+      "isrc": "FR9W12136756",
+      "platformId": "1572268722"
+    },
+    {
+      "title": "Au Bout",
+      "artists": [
+        "Josman"
+      ],
+      "album": "000$",
+      "durationMs": 241000,
+      "isrc": "FR4DW1701800",
+      "platformId": "1331100212"
+    },
+    {
+      "title": "Pour deux âmes solitaires (Part.1)",
+      "artists": [
+        "Luidji"
+      ],
+      "album": "Pour deux âmes solitaires (Part.1)",
+      "durationMs": 129000,
+      "isrc": "FR9W11732780",
+      "platformId": "1706519567"
+    },
+    {
+      "title": "Mi Amor",
+      "artists": [
+        "Hamza"
+      ],
+      "album": "H-24",
+      "durationMs": 225000,
+      "isrc": "QM2PV1522188",
+      "platformId": "4352639882"
+    },
+    {
+      "title": "Dis-moi que tu m'aimes",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "M.I.L.S",
+      "durationMs": 198000,
+      "isrc": "FRZ111600556",
+      "platformId": "132929042"
+    },
+    {
+      "title": "Señorita",
+      "artists": [
+        "Josman"
+      ],
+      "album": "HHHH",
+      "durationMs": 203000,
+      "isrc": "FRDCV2100540",
+      "platformId": "1399855572"
+    },
+    {
+      "title": "My love (feat. Tayc)",
+      "artists": [
+        "Josman"
+      ],
+      "album": "My love (feat. Tayc)",
+      "durationMs": 196000,
+      "isrc": "FRDCV2100560",
+      "platformId": "1400988252"
+    },
+    {
+      "title": "Pour deux âmes solitaires (Part.2)",
+      "artists": [
+        "Luidji"
+      ],
+      "album": "Pour deux âmes solitaires (Part.2)",
+      "durationMs": 189000,
+      "isrc": "FR9W11732781",
+      "platformId": "1706440387"
+    },
+    {
+      "title": "SPECIAL (feat. Nekfeu & Fousheé)",
+      "artists": [
+        "Laylow"
+      ],
+      "album": "L'Étrange Histoire de Mr.Anderson",
+      "durationMs": 231000,
+      "isrc": "FRDN42100160",
+      "platformId": "1424343652"
+    },
+    {
+      "title": "Du mal à te dire",
+      "artists": [
+        "Dinos"
+      ],
+      "album": "Stamina, Memento",
+      "durationMs": 207000,
+      "isrc": "FR9EI2100080",
+      "platformId": "1418540442"
+    },
+    {
+      "title": "Σ. MOROSE",
+      "artists": [
+        "Damso"
+      ],
+      "album": "QALF infinity",
+      "durationMs": 264000,
+      "isrc": "BE6JP2100005",
+      "platformId": "2527058701"
+    },
+    {
+      "title": "Smog",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Lithopédion",
+      "durationMs": 168000,
+      "isrc": "FRUM71801226",
+      "platformId": "511840252"
+    },
+    {
+      "title": "Feu de bois",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Lithopédion",
+      "durationMs": 183000,
+      "isrc": "FRUM71801224",
+      "platformId": "511840232"
+    },
+    {
+      "title": "Baltringue",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Lithopédion",
+      "durationMs": 288000,
+      "isrc": "FRUM71801221",
+      "platformId": "511840202"
+    },
+    {
+      "title": "Vibes",
+      "artists": [
+        "Hamza"
+      ],
+      "album": "1994",
+      "durationMs": 200000,
+      "isrc": "BE6GM1700023",
+      "platformId": "417195062"
+    },
+    {
+      "title": "Putana",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "Destin",
+      "durationMs": 184000,
+      "isrc": "FR9W11903549",
+      "platformId": "652380292"
+    },
+    {
+      "title": "Deux frères",
+      "artists": [
+        "PNL"
+      ],
+      "album": "Deux frères",
+      "durationMs": 247000,
+      "isrc": "FR8JU1900060",
+      "platformId": "783256992"
+    },
+    {
+      "title": "Onizuka",
+      "artists": [
+        "PNL"
+      ],
+      "album": "Dans la légende",
+      "durationMs": 252000,
+      "isrc": "FR0U91601098",
+      "platformId": "132123630"
+    },
+    {
+      "title": "Autre monde",
+      "artists": [
+        "PNL"
+      ],
+      "album": "Deux frères",
+      "durationMs": 281000,
+      "isrc": "FR8JU1900020",
+      "platformId": "783256932"
+    },
+    {
+      "title": "Uranus",
+      "artists": [
+        "PNL"
+      ],
+      "album": "Dans la légende",
+      "durationMs": 240000,
+      "isrc": "FR0U91601097",
+      "platformId": "132123628"
+    },
+    {
+      "title": "#Hulahoop",
+      "artists": [
+        "Gros Mo"
+      ],
+      "album": "Les # de Gros Mo",
+      "durationMs": 255000,
+      "isrc": "FR6031502040",
+      "platformId": "129325586"
+    },
+    {
+      "title": "Sex (Interlude)",
+      "artists": [
+        "MadeInParis"
+      ],
+      "album": "Voulez-vous coucher avec moi",
+      "durationMs": 111000,
+      "isrc": "FRZ052200002",
+      "platformId": "1639711872"
+    },
+    {
+      "title": "Intro",
+      "artists": [
+        "Josman"
+      ],
+      "album": "M.A.N (Black Roses & Lost Feelings)",
+      "durationMs": 147000,
+      "isrc": "FRDCV2200640",
+      "platformId": "1684004267"
+    },
+    {
+      "title": "Elle m'a eu",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "Comme prévu",
+      "durationMs": 177000,
+      "isrc": "FR9W11716396",
+      "platformId": "1623327532"
+    },
+    {
+      "title": "Nos souvenirs",
+      "artists": [
+        "Jok'air"
+      ],
+      "album": "Jok'travolta",
+      "durationMs": 485000,
+      "isrc": "FR8FB1900990",
+      "platformId": "654839522"
+    },
+    {
+      "title": "Lettre à une femme",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "M.I.L.S 3",
+      "durationMs": 157000,
+      "isrc": "FR9W12003586",
+      "platformId": "898651622"
+    },
+    {
+      "title": "Motel",
+      "artists": [
+        "Ashh"
+      ],
+      "album": "CRUISE",
+      "durationMs": 241000,
+      "isrc": "FR8PB1700130",
+      "platformId": "457302112"
+    },
+    {
+      "title": "Ε. Signaler",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Ipséité",
+      "durationMs": 202000,
+      "isrc": "FRUM71700377",
+      "platformId": "354918011"
+    },
+    {
+      "title": "Autotune",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Batterie faible",
+      "durationMs": 294000,
+      "isrc": "FRUM71600859",
+      "platformId": "366148531"
+    },
+    {
+      "title": "DEUX TOILES DE MER",
+      "artists": [
+        "Damso"
+      ],
+      "album": "QALF infinity",
+      "durationMs": 315000,
+      "isrc": "BE6JP2000003",
+      "platformId": "2527058621"
+    },
+    {
+      "title": "Γ. Mosaïque solitaire",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Ipséité",
+      "durationMs": 306000,
+      "isrc": "FRUM71700375",
+      "platformId": "354917991"
+    },
+    {
+      "title": "J’aurais pas dû",
+      "artists": [
+        "S-Crew"
+      ],
+      "album": "Destins liés",
+      "durationMs": 225000,
+      "isrc": "FR9W11607762",
+      "platformId": "126902923"
+    },
+    {
+      "title": "60 années",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Lithopédion",
+      "durationMs": 178000,
+      "isrc": "FRUM71801227",
+      "platformId": "511840262"
+    },
+    {
+      "title": "Δ. Dieu ne ment jamais",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Ipséité",
+      "durationMs": 199000,
+      "isrc": "FRUM71700376",
+      "platformId": "354918001"
+    },
+    {
+      "title": "Air Max",
+      "artists": [
+        "Rim'K"
+      ],
+      "album": "Mutant",
+      "durationMs": 205000,
+      "isrc": "FRU491800030",
+      "platformId": "2937154391"
+    },
+    {
+      "title": "Θ. Macarena",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Ipséité",
+      "durationMs": 207000,
+      "isrc": "FRUM71700380",
+      "platformId": "354918041"
+    },
+    {
+      "title": "Tueurs",
+      "artists": [
+        "Damso"
+      ],
+      "album": "Tueurs",
+      "durationMs": 239000,
+      "isrc": "FRUM71701949",
+      "platformId": "423049832"
+    },
+    {
+      "title": "Mamacita",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "Comme prévu",
+      "durationMs": 187000,
+      "isrc": "FRZ041700655",
+      "platformId": "1623327472"
+    },
+    {
+      "title": "Boosk'Halloween",
+      "artists": [
+        "menace Santana"
+      ],
+      "album": "Boosk'Halloween",
+      "durationMs": 147000,
+      "isrc": "FR9W12139591",
+      "platformId": "1542745272"
+    },
+    {
+      "title": "Life",
+      "artists": [
+        "Hamza"
+      ],
+      "album": "1994",
+      "durationMs": 228000,
+      "isrc": "BE6GM1700021",
+      "platformId": "417195042"
+    },
+    {
+      "title": "Ma go",
+      "artists": [
+        "Moji x Sboy"
+      ],
+      "album": "Ma go",
+      "durationMs": 209000,
+      "isrc": "GBMA22014290",
+      "platformId": "1024910272"
+    },
+    {
+      "title": "DIE",
+      "artists": [
+        "Gazo"
+      ],
+      "album": "KMT",
+      "durationMs": 240000,
+      "isrc": "FR9W12215357",
+      "platformId": "1798370057"
+    },
+    {
+      "title": "PETETE",
+      "artists": [
+        "Gambi"
+      ],
+      "album": "PETETE",
+      "durationMs": 123000,
+      "isrc": "FRZ042200894",
+      "platformId": "1832912477"
+    },
+    {
+      "title": "YOMB",
+      "artists": [
+        "RK"
+      ],
+      "album": "DLPDA",
+      "durationMs": 170000,
+      "isrc": "FRX452498564",
+      "platformId": "3011927031"
+    },
+    {
+      "title": "Mélanine",
+      "artists": [
+        "Heuss L'enfoiré"
+      ],
+      "album": "Mélanine",
+      "durationMs": 180000,
+      "isrc": "FRPZ92417040",
+      "platformId": "2778994151"
+    },
+    {
+      "title": "Met Bouche Aw",
+      "artists": [
+        "Les CURVYZZ"
+      ],
+      "album": "Met Bouche Aw",
+      "durationMs": 154000,
+      "isrc": "TCAHU2462218",
+      "platformId": "2624030702"
+    },
+    {
+      "title": "Movie",
+      "artists": [
+        "L2B "
+      ],
+      "album": "Movie",
+      "durationMs": 143000,
+      "isrc": "FRDJ72400080",
+      "platformId": "3038510331"
+    },
+    {
+      "title": "Roro",
+      "artists": [
+        "Ninho"
+      ],
+      "album": "Comme prévu",
+      "durationMs": 184000,
+      "isrc": "FRZ041700452",
+      "platformId": "1623327492"
+    },
+    {
+      "title": "Si tu savais...",
+      "artists": [
+        "Josman"
+      ],
+      "album": "SPLIT",
+      "durationMs": 251000,
+      "isrc": "FRDCV2000150",
+      "platformId": "887338802"
+    },
+    {
+      "title": "Big Daddy Jok",
+      "artists": [
+        "Jok'air"
+      ],
+      "album": "Big Daddy Jok",
+      "durationMs": 205000,
+      "isrc": "FR9W11702877",
+      "platformId": "142744838"
+    },
+    {
+      "title": "J'dois l'oublier",
+      "artists": [
+        "Niro"
+      ],
+      "album": "Sale môme (Edition Finale)",
+      "durationMs": 183000,
+      "isrc": "FR9W12017666",
+      "platformId": "1429740182"
+    },
+    {
+      "title": "JAMAIS TOI",
+      "artists": [
+        "R2"
+      ],
+      "album": "JAMAIS TOI",
+      "durationMs": 167000,
+      "isrc": "FR9W12551242",
+      "platformId": "3559587531"
+    },
+    {
+      "title": "Météo",
+      "artists": [
+        "Doulkha"
+      ],
+      "album": "Météo",
+      "durationMs": 156000,
+      "isrc": "TCAIF2441276",
+      "platformId": "3036269391"
+    },
+    {
+      "title": "Racks - Booska Nouvelle École (Bonus Track)",
+      "artists": [
+        "Yorssy"
+      ],
+      "album": "Racks - Booska Nouvelle École",
+      "durationMs": 149000,
+      "isrc": "QZ8BZ2410215",
+      "platformId": "2927525941"
+    },
+    {
+      "title": "Tu veux quoi",
+      "artists": [
+        "Landy"
+      ],
+      "album": "Tu veux quoi",
+      "durationMs": 209000,
+      "isrc": "FRX762501258",
+      "platformId": "3447837611"
+    }
+  ],
+  "notes": [
+    "GET /playlist/{id} OK (public : true).",
+    "GET /playlist/{id}/tracks OK en 1 page(s).",
+    "ISRC présent sur 62/62 titres."
+  ]
+}
