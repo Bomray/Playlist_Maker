@@ -1,0 +1,15 @@
+{
+  "platform": "soundcloud",
+  "url": "https://soundcloud.com/forss/sets/soulhack",
+  "playlist": {
+    "id": "https://soundcloud.com/forss/sets/soulhack",
+    "name": "Soulhack by Forss",
+    "trackCount": null
+  },
+  "tracks": [],
+  "notes": [
+    "oEmbed OK (« Soulhack by Forss ») : métadonnées de la playlist seulement, aucune liste de titres.",
+    "GET /resolve sans auth : HTTP 429 { \"error\": \"Rate Limit Exceeded\" }",
+    "SOUNDCLOUD_CLIENT_ID/SECRET absents : lecture des titres impossible sans app officielle."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "playlist-maker-spikes",
+  "private": true,
+  "type": "module",
+  "description": "Scripts d'exploration jetables, hors application",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "spotify": "NODE_USE_ENV_PROXY=1 tsx spotify.ts",
+    "deezer": "NODE_USE_ENV_PROXY=1 tsx deezer.ts",
+    "deezer:find": "NODE_USE_ENV_PROXY=1 tsx deezer-find-playlist.ts",
+    "youtube-music": "NODE_USE_ENV_PROXY=1 tsx youtube-music.ts",
+    "soundcloud": "NODE_USE_ENV_PROXY=1 tsx soundcloud.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.11",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "youtubei.js": "^18.3.0",
+    "zod": "^4.6.7"
+  }
+}

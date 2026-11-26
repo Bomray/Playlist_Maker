@@ -1,0 +1,16 @@
+{
+  "platform": "spotify",
+  "url": "https://open.spotify.com/playlist/2V1Ti24yYnpwKT57BvAKK7",
+  "playlist": {
+    "id": "2V1Ti24yYnpwKT57BvAKK7",
+    "name": "L²",
+    "trackCount": null
+  },
+  "tracks": [],
+  "notes": [
+    "Token client credentials obtenu.",
+    "GET /playlists/{id} OK (nom : L²).",
+    "GET /playlists/{id}/items : HTTP 401 {\"error\": {\"status\": 401, \"message\": \"Valid user authentication required\" } }",
+    "GET /playlists/{id}/tracks : HTTP 403 {\"error\": {\"status\": 403, \"message\": \"Forbidden\" } }"
+  ]
+}

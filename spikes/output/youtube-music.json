@@ -1,0 +1,130 @@
+{
+  "platform": "youtube-music",
+  "url": "https://music.youtube.com/playlist?list=PLSOL9LfGEGu0&si=T1v2HNevrax7yBNf&drli=1",
+  "playlist": {
+    "id": "PLSOL9LfGEGu0",
+    "name": "Test APP",
+    "trackCount": 11
+  },
+  "tracks": [
+    {
+      "title": "Lie",
+      "artists": [
+        "NF"
+      ],
+      "album": "Perception",
+      "durationMs": 210000,
+      "isrc": null,
+      "platformId": "1k5QIbweEmU"
+    },
+    {
+      "title": "Goodbye",
+      "artists": [
+        "The Kid LAROI"
+      ],
+      "album": "The Party Never Ends 2.0",
+      "durationMs": 162000,
+      "isrc": null,
+      "platformId": "5K8yT7QIVHY"
+    },
+    {
+      "title": "Nekketsu",
+      "artists": [
+        "Nekfeu"
+      ],
+      "album": "Cyborg",
+      "durationMs": 215000,
+      "isrc": null,
+      "platformId": "J4CKkE3EBm8"
+    },
+    {
+      "title": "Jamais rentré - Nouvelle École x CUPRA",
+      "artists": [
+        "Nouvelle École",
+        "OZZY",
+        "YANAMKO",
+        "ANS"
+      ],
+      "album": "Jamais rentré - Nouvelle École x CUPRA",
+      "durationMs": 211000,
+      "isrc": null,
+      "platformId": "N4yvo7aIRts"
+    },
+    {
+      "title": "JEUNE MALAGASY",
+      "artists": [
+        "JYEUHAIR"
+      ],
+      "album": "JEUNE MALAGASY",
+      "durationMs": 136000,
+      "isrc": null,
+      "platformId": "StxCxamGrto"
+    },
+    {
+      "title": "Le goût du sel",
+      "artists": [
+        "Bigflo",
+        "Oli"
+      ],
+      "album": "Karma",
+      "durationMs": 187000,
+      "isrc": null,
+      "platformId": "FhLXAwBGX3U"
+    },
+    {
+      "title": "DONT WANT IT",
+      "artists": [
+        "Lil Nas X"
+      ],
+      "album": "MONTERO",
+      "durationMs": 131000,
+      "isrc": null,
+      "platformId": "1m0gYENb9R4"
+    },
+    {
+      "title": "Sous une averse",
+      "artists": [
+        "Lonepsi"
+      ],
+      "album": "Toutes les nuits du monde",
+      "durationMs": 143000,
+      "isrc": null,
+      "platformId": "ZdQjq2x_Op4"
+    },
+    {
+      "title": "Hide",
+      "artists": [
+        "Juice WRLD"
+      ],
+      "album": "Spider-Man: Into the Spider-Verse (Soundtrack From & Inspired by the Motion Picture)",
+      "durationMs": 206000,
+      "isrc": null,
+      "platformId": "uYHNdTPV7pM"
+    },
+    {
+      "title": "Sad Nibba Hours",
+      "artists": [
+        "PapiTHBK"
+      ],
+      "album": "EP",
+      "durationMs": 151000,
+      "isrc": null,
+      "platformId": "t60QJS41AnQ"
+    },
+    {
+      "title": "My Songs Know What You Did In The Dark (Light Em Up)",
+      "artists": [
+        "Fall Out Boy"
+      ],
+      "album": "Save Rock And Roll",
+      "durationMs": 187000,
+      "isrc": null,
+      "platformId": "6LUon6zLyTM"
+    }
+  ],
+  "notes": [
+    "youtubei.js music.getPlaylist : 11 items, 0 avec id, item_type=unknown.",
+    "Réponse brute /browse : 11 items, displayPolicy=MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT.",
+    "ISRC non disponible via InnerTube."
+  ]
+}
