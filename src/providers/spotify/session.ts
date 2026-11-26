@@ -29,6 +29,15 @@ export function spotifyAuthConfig(): SpotifyAuthConfig {
   };
 }
 
+/**
+ * URL absolue dans l'app, sur le même hôte que l'URI de redirection Spotify.
+ * `request.nextUrl.origin` vaut `localhost` en dev même si on visite 127.0.0.1 :
+ * les cookies (liés à 127.0.0.1) seraient alors perdus après la redirection.
+ */
+export function spotifyAppUrl(path: string): URL {
+  return new URL(path, serverEnv().SPOTIFY_REDIRECT_URI);
+}
+
 export async function saveOAuthState(data: z.infer<typeof OAuthStateSchema>): Promise<void> {
   await writeSealedCookie(OAUTH_COOKIE, data, OAUTH_MAX_AGE);
 }
