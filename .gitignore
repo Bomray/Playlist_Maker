@@ -165,3 +165,8 @@ next-env.d.ts
 # Environnements Python des spikes (ytmusicapi)
 .venv/
 __pycache__/
+# Playwright
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/

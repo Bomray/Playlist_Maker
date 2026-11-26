@@ -1,0 +1,23 @@
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+import prettier from "eslint-config-prettier/flat";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Désactive les règles de mise en forme qui entreraient en conflit avec Prettier.
+  prettier,
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "playwright-report/**",
+    "test-results/**",
+    // Scripts d'exploration jetables, avec leur propre configuration.
+    "spikes/**",
+  ]),
+]);
+
+export default eslintConfig;
