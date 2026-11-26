@@ -110,6 +110,20 @@ docs/decisions/         # notes de décision courtes (ADR), une par choix import
 - Si une consigne de ce fichier bloque ou semble mauvaise, le dire au lieu de la
   contourner.
 
+## Git
+
+- `main` est protégée : on n'y pousse jamais directement, tout passe par une PR.
+- Noms de branches : `<type>/<description-courte>` en minuscules avec des tirets,
+  avec les mêmes types que les commits.
+  Exemples : `feat/conversion-spotify`, `fix/matching-featuring`, `docs/readme`.
+  (Les branches créées par les sessions cloud commencent par `claude/` : c'est normal.)
+- Commits : Conventional Commits, en français, à l'impératif présent,
+  première ligne de 72 caractères maximum. Un commit = un changement cohérent.
+- Avant d'ouvrir une PR : `pnpm lint && pnpm typecheck && pnpm test` passent.
+- Titre de PR au format Conventional Commits ; description avec ce qui change,
+  pourquoi, et comment tester.
+- On fusionne les PR en « Squash and merge » pour garder un historique de `main` lisible.
+
 ## Interface
 
 - Mobile d'abord : tout doit être utilisable sur un écran de téléphone.
