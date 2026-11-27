@@ -1,7 +1,7 @@
 # Playlist_Maker
 
 Convertisseur de playlists entre plateformes de streaming (Deezer et YouTube Music →
-Spotify) et stats d'écoute Spotify.
+Spotify) et stats d'écoute Spotify. En ligne : https://playlist-maker-bomray.vercel.app
 
 Voir `CLAUDE.md` pour l'architecture, les conventions et l'avancement.
 
@@ -12,6 +12,14 @@ pnpm install
 cp .env.example .env.local   # puis remplir les valeurs
 pnpm dev                     # http://127.0.0.1:3000
 ```
+
+En local, `DATABASE_URL=pglite:.dev-db` donne une base PostgreSQL locale (PGlite), sans
+compte ni réseau : les tables sont créées au premier lancement. Pour travailler sur une
+vraie base Neon, utiliser l'adresse d'une **branche de développement** Neon (jamais celle de
+production) puis `pnpm db:migrate`.
+
+Tests de bout en bout : `pnpm test:e2e` lance son propre serveur (port 3100, base PGlite
+préremplie). Arrêter `pnpm dev` avant : Next.js n'accepte qu'un serveur de dev par dossier.
 
 ## Mise en ligne (Vercel)
 
@@ -44,3 +52,15 @@ met le site à jour automatiquement ; chaque PR obtient une adresse de prévisua
 
 Si l'adresse finale du projet diffère, mettre à jour `SPOTIFY_REDIRECT_URI` dans Vercel
 (puis redéployer) et l'URI dans le dashboard Spotify.
+
+### Base de données (Neon)
+
+1. Dans le projet Vercel : **Storage** → **Create Database** → **Neon** → accepter les
+   options par défaut (offre gratuite), relier la base au projet pour **Production** et
+   **Preview**. Vercel ajoute `DATABASE_URL` (et d'autres variables `PG*`) au projet.
+2. Ajouter `TOKEN_ENCRYPTION_KEY` dans les variables d'environnement.
+3. Redéployer : le build de production applique les migrations (`db/migrations/*.sql`)
+   avant `next build`. Les aperçus de PR ne migrent pas la base.
+
+Changer `TOKEN_ENCRYPTION_KEY` rend les tokens enregistrés illisibles : chacun devra se
+reconnecter à Spotify.
