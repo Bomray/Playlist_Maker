@@ -4,7 +4,19 @@
 import { z } from "zod";
 import { fetchJson } from "@/lib/http";
 
-export const SPOTIFY_SCOPES = ["playlist-modify-private", "playlist-read-private"] as const;
+export const SPOTIFY_SCOPES = [
+  "playlist-modify-private",
+  "playlist-read-private",
+  // Nécessaire pour `market=from_token` dans la recherche (sinon HTTP 403
+  // « Insufficient client scope ») : pays et type d'abonnement, pas l'e-mail.
+  "user-read-private",
+] as const;
+
+/** Scopes demandés par l'app mais absents d'une session (connexion faite avant leur ajout). */
+export function missingScopes(granted: string): string[] {
+  const have = new Set(granted.split(" ").filter(Boolean));
+  return SPOTIFY_SCOPES.filter((s) => !have.has(s));
+}
 
 const AUTHORIZE_URL = "https://accounts.spotify.com/authorize";
 const TOKEN_URL = "https://accounts.spotify.com/api/token";

@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { buildAuthorizeUrl, buildTokenRequest, exchangeCode, refreshTokens } from "./auth";
+import {
+  buildAuthorizeUrl,
+  buildTokenRequest,
+  exchangeCode,
+  missingScopes,
+  refreshTokens,
+} from "./auth";
 
 const base = { clientId: "mon-client", redirectUri: "http://127.0.0.1:3000/callback" };
 
@@ -13,11 +19,25 @@ describe("buildAuthorizeUrl", () => {
     expect(url.origin + url.pathname).toBe("https://accounts.spotify.com/authorize");
     expect(url.searchParams.get("response_type")).toBe("code");
     expect(url.searchParams.get("client_id")).toBe("mon-client");
-    expect(url.searchParams.get("scope")).toBe("playlist-modify-private playlist-read-private");
+    expect(url.searchParams.get("scope")).toBe(
+      "playlist-modify-private playlist-read-private user-read-private",
+    );
     expect(url.searchParams.get("redirect_uri")).toBe("http://127.0.0.1:3000/callback");
     expect(url.searchParams.get("code_challenge_method")).toBe("S256");
     expect(url.searchParams.get("code_challenge")).toBe("chal");
     expect(url.searchParams.get("state")).toBe("st");
+  });
+});
+
+describe("missingScopes", () => {
+  it("liste les scopes absents d'une ancienne session", () => {
+    expect(missingScopes("playlist-read-private playlist-modify-private")).toEqual([
+      "user-read-private",
+    ]);
+    expect(
+      missingScopes("user-read-private playlist-read-private playlist-modify-private"),
+    ).toEqual([]);
+    expect(missingScopes("")).toHaveLength(3);
   });
 });
 

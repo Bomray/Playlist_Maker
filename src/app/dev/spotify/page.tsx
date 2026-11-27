@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { missingScopes } from "@/providers/spotify/auth";
 import { readSpotifySession } from "@/providers/spotify/session";
 import { TestRunner } from "./test-runner";
 
@@ -36,6 +37,7 @@ async function SessionPanel({
   const params = await searchParams;
   const authError = typeof params.auth_error === "string" ? params.auth_error : null;
   const session = await readSpotifySession();
+  const missing = session ? missingScopes(session.scope) : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -72,7 +74,17 @@ async function SessionPanel({
         )}
       </section>
 
-      {session && <TestRunner />}
+      {missing.length > 0 && (
+        <div role="alert" className="rounded-lg border border-destructive/60 p-3 text-sm">
+          <p className="font-semibold text-destructive">Droits manquants</p>
+          <p className="mt-1">
+            Ta connexion date d&apos;avant l&apos;ajout de : <code>{missing.join(", ")}</code>.
+            Déconnecte-toi puis reconnecte-toi pour les accorder.
+          </p>
+        </div>
+      )}
+
+      {session && missing.length === 0 && <TestRunner />}
     </div>
   );
 }
