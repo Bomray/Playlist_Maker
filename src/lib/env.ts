@@ -14,6 +14,21 @@ const EnvSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ? v : undefined)),
+  // Base Neon (ajoutée par l'intégration Vercel) et clé de chiffrement des tokens Spotify.
+  // Facultatives ici pour que les pages sans base (stats, développement) fonctionnent ;
+  // `getDb()` et le chiffrement lèvent une erreur claire si elles manquent.
+  DATABASE_URL: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined)),
+  TOKEN_ENCRYPTION_KEY: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined))
+    .refine(
+      (v) => v === undefined || v.length >= 32,
+      "TOKEN_ENCRYPTION_KEY doit faire au moins 32 caractères",
+    ),
   SPOTIFY_REDIRECT_URI: z.url().default("http://127.0.0.1:3000/callback"),
   SESSION_SECRET: z
     .string()
