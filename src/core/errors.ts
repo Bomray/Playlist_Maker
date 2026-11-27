@@ -13,6 +13,7 @@ export type ProviderErrorKind =
   | "not_accessible" // ressource existante mais non lisible avec ces droits
   | "network" // pas de réponse (DNS, coupure, timeout)
   | "invalid_response" // réponse inattendue (schéma Zod non respecté)
+  | "unsupported" // opération impossible sur cette plateforme (ex. écrire sur Deezer)
   | "unknown"; // tout autre statut
 
 export interface ProviderErrorInit {
