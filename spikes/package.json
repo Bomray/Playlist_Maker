@@ -13,7 +13,8 @@
     "spotify-stats": "tsx spotify-stats.ts",
     "youtube-official": "tsx youtube-official.ts",
     "youtube-write": "tsx youtube-write.ts",
-    "ai-playlist": "tsx ai-playlist.ts"
+    "ai-playlist": "tsx ai-playlist.ts",
+    "images": "tsx images.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.11",
