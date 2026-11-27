@@ -1,0 +1,38 @@
+# Enregistrement continu des écoutes (décision 0002) : appelle l'appli toutes les heures.
+# Secret du dépôt requis : CRON_SECRET (même valeur que la variable CRON_SECRET de Vercel).
+# Attention : GitHub désactive les tâches planifiées d'un dépôt public après 60 jours sans
+# activité ; il suffit alors de réactiver ce workflow dans l'onglet Actions.
+name: Collecte des écoutes
+
+on:
+  schedule:
+    # Minute 17 plutôt que 0 : moins de retard qu'aux heures pile, très chargées chez GitHub.
+    - cron: "17 * * * *"
+  # Lancement à la main depuis l'onglet Actions (pour tester).
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Appeler /api/cron/collect
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ vars.APP_URL || 'https://playlist-maker-bomray.vercel.app' }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Secret CRON_SECRET manquant (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          # --fail-with-body : échoue (et affiche la réponse) si le statut HTTP n'est pas 2xx.
+          curl --silent --show-error --fail-with-body --max-time 320 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/collect"
+          echo
