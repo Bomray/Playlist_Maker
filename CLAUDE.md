@@ -64,9 +64,21 @@ entre plateformes de streaming.
        `after`, origine `api`, durée = durée du morceau). Accord par l'interrupteur de `/stats`
        (`/api/stats/collect`, première collecte immédiate). Règle « l'export fait foi » : à la
        lecture, les écoutes `api` sur la période couverte par l'import sont ignorées.
-8. ⏭️ À choisir : génération de playlist par IA (demande une clé payante ; corriger d'abord le
-   score des sources sans durée,
-   voir `spikes/RESULTS-2.md`).
+8. ⏭️ Refonte et stats v2 (demandées le 27/11/2026, dans cet ordre) :
+   - ✅ Spike images (`spikes/RESULTS-3.md`) : routes unitaires `/tracks/{id}` et
+     `/artists/{id}` OK (~7 req/s sans 429), routes groupées `?ids=` en 403. Images à remplir
+     en tâche de fond et à mettre en cache en base (adresses `i.scdn.co`).
+   - ⏭️ Refonte graphique PC et mobile : **style sombre type appli musique** (thème clair
+     gardé). Proposer **plusieurs maquettes PC + mobile** et laisser l'utilisateur choisir avant
+     d'implémenter.
+   - Stats v2 : unité au choix (minutes / heures / jours) ; **sélecteur de période global**
+     (aujourd'hui, hier, 7 jours, mois, 6 mois, année, année précise, tout, plage libre) ;
+     tops complets (tous les titres / artistes / albums, recherche) ; pages artiste et titre
+     (stats, titres de l'artiste, évolution par jour / semaine / mois / année) ; images sur
+     titres, albums et artistes.
+   - Ensuite : notes sur 10 (titre, album, artiste ; moyenne des titres ou note fixée),
+     autres idées de fonctionnalités, puis génération de playlist par IA (clé payante ;
+     corriger d'abord le score des sources sans durée, voir `spikes/RESULTS-2.md`).
 
 Mettre cette liste à jour à chaque PR fusionnée.
 
