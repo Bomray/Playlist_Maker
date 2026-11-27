@@ -42,7 +42,10 @@ async function SessionGate({ searchParams }: { searchParams: PageProps<"/">["sea
 
       {session ? (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
-          <span>Connecté à Spotify</span>
+          <span>
+            Connecté à Spotify
+            {session.displayName ? ` (${session.displayName})` : ""}
+          </span>
           <form action="/api/auth/spotify/logout" method="post">
             <Button type="submit" variant="ghost" size="sm">
               Se déconnecter

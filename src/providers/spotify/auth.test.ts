@@ -20,7 +20,7 @@ describe("buildAuthorizeUrl", () => {
     expect(url.searchParams.get("response_type")).toBe("code");
     expect(url.searchParams.get("client_id")).toBe("mon-client");
     expect(url.searchParams.get("scope")).toBe(
-      "playlist-modify-private playlist-read-private user-read-private",
+      "playlist-modify-private playlist-read-private user-read-private user-read-recently-played",
     );
     expect(url.searchParams.get("redirect_uri")).toBe("http://127.0.0.1:3000/callback");
     expect(url.searchParams.get("code_challenge_method")).toBe("S256");
@@ -33,11 +33,14 @@ describe("missingScopes", () => {
   it("liste les scopes absents d'une ancienne session", () => {
     expect(missingScopes("playlist-read-private playlist-modify-private")).toEqual([
       "user-read-private",
+      "user-read-recently-played",
     ]);
     expect(
-      missingScopes("user-read-private playlist-read-private playlist-modify-private"),
+      missingScopes(
+        "user-read-private playlist-read-private playlist-modify-private user-read-recently-played",
+      ),
     ).toEqual([]);
-    expect(missingScopes("")).toHaveLength(3);
+    expect(missingScopes("")).toHaveLength(4);
   });
 });
 

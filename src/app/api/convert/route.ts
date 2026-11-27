@@ -17,8 +17,8 @@ const BodySchema = z.object({ url: z.string().trim().min(1).max(2_000) });
 export const maxDuration = 300;
 
 /**
- * Le token Spotify doit rester valide pendant toute la conversion : une fois le flux
- * commencé, on ne peut plus écrire le cookie d'un token rafraîchi.
+ * Le token Spotify est obtenu une fois avant le flux et réutilisé pour toute la conversion :
+ * on demande une marge de 30 min pour qu'il n'expire pas en cours de route.
  */
 const TOKEN_MIN_VALIDITY_MS = 30 * 60_000;
 
@@ -38,7 +38,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Corps attendu : { url: string }" }, { status: 400 });
   }
 
-  // Avant le flux : rafraîchit le token si besoin (écriture du cookie dans les en-têtes).
+  // Avant le flux : token valide au moins 30 min (rafraîchi en base si besoin).
   let token: string;
   try {
     token = await getSpotifyAccessToken(TOKEN_MIN_VALIDITY_MS);
