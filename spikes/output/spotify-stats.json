@@ -1,0 +1,14 @@
+{
+  "ranAt": "2026-11-27T16:08:17.183Z",
+  "note": "Lancé sur le PC du développeur. Exemples de titres retirés (historique personnel) : seuls les compteurs sont gardés.",
+  "scopes": "user-read-recently-played user-top-read",
+  "checks": [
+    { "request": "/me/top/tracks?time_range=short_term&limit=50", "status": 200, "summary": "50 titres (total annoncé 1625), ISRC sur 50" },
+    { "request": "/me/top/tracks?time_range=medium_term&limit=50", "status": 200, "summary": "50 titres (total annoncé 2924), ISRC sur 50" },
+    { "request": "/me/top/tracks?time_range=long_term&limit=50", "status": 200, "summary": "50 titres (total annoncé 5142), ISRC sur 50" },
+    { "request": "/me/top/artists?time_range=medium_term&limit=50", "status": 200, "summary": "50 artistes, genres renseignés sur 0" },
+    { "request": "/me/player/recently-played?limit=50", "status": 200, "summary": "50 écoutes" },
+    { "request": "/me/player/recently-played?limit=50&before=…", "status": 200, "summary": "0 écoutes" }
+  ],
+  "history": "Historique récent : 50 écoutes au total, la plus ancienne environ 8 h avant le lancement."
+}

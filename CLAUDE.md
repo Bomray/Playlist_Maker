@@ -11,6 +11,10 @@ entre plateformes de streaming.
 - **V1 (en cours)** : convertir une playlist d'une plateforme vers une autre en un clic,
   à partir de son lien. Plateformes visées : Spotify, YouTube Music, Deezer, SoundCloud.
   Pas de système de comptes pour l'instant.
+- **Principe : l'utilisateur final ne crée aucun compte supplémentaire.** Il se connecte
+  seulement avec ses comptes existants (Spotify, Google/YouTube…). Les clés développeur
+  (Spotify, Google Cloud…) sont créées une fois par le développeur et restent invisibles.
+  Donc pas de Last.fm ni d'autre service tiers à rejoindre pour utiliser l'appli.
 - **Plus tard** : génération de playlists à partir d'une demande écrite (IA),
   statistiques d'écoute multi-plateformes, filtres personnalisés sauvegardables.
   Ne rien construire pour ces fonctionnalités tant que la V1 n'est pas terminée.

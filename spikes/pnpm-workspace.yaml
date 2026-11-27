@@ -1,0 +1,4 @@
+# Projet pnpm isolé des scripts d'exploration (hors application).
+# esbuild (utilisé par tsx) télécharge son binaire à l'installation : on l'autorise.
+allowBuilds:
+  esbuild: true
