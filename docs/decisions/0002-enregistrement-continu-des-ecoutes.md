@@ -46,7 +46,11 @@ plus (Development Mode Spotify).
 - `tracks` : URI Spotify (ou artiste + titre sans URI), titre, artiste, album. Un morceau
   n'est stocké qu'une fois, partagé entre utilisateurs.
 - `plays` : utilisateur, morceau, date de fin, durée écoutée, origine (`import` ou `api`).
-  Clé unique (utilisateur, morceau, date de fin) pour ne jamais compter deux fois.
+  Clé unique pour ne jamais compter deux fois. **Mise à jour (PR d'import)** : la clé
+  (utilisateur, morceau, date de fin) écartait à tort des écoutes hors ligne synchronisées
+  ensemble (même date de fin). Clé retenue : (utilisateur, date de fin, morceau, durée écoutée,
+  `offline_timestamp`). Sur un export réel de 290 129 lignes, elle n'en écarte que 44, dont 36
+  strictement identiques (contre 221 avant).
 
 Estimation : environ 50 octets par écoute avec index, soit environ 15 Mo pour 290 000
 écoutes. Ça tient largement dans l'offre gratuite de Neon, même à 5 gros auditeurs.
