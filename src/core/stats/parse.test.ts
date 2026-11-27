@@ -39,6 +39,7 @@ describe("parseExportFile", () => {
         album: "Karma",
         uri: "spotify:track:000000000000000000000a",
         skipped: false,
+        offlineTs: 0,
       },
     ]);
     expect(JSON.stringify(plays)).not.toMatch(/203\.0\.113|"FR"/);
