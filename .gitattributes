@@ -1,0 +1,4 @@
+# Fins de ligne LF partout (comme Prettier), quel que soit le réglage Git de la machine.
+* text=auto eol=lf
+*.ico binary
+*.png binary
