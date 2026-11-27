@@ -39,8 +39,14 @@ entre plateformes de streaming.
    - ✅ 5b. Interface sur l'accueil (`components/conversion/`) : lien → progression → récap
      (trouvés / incertains / introuvables) → correction → création. `/dev/spotify` supprimée.
 6. ✅ YouTube Music comme 2ᵉ source (`providers/youtube-music/`, API officielle, lecture seule).
-7. ⏭️ Génération de playlist par IA (corriger d'abord le score des sources sans durée,
-   voir `spikes/RESULTS-2.md`), puis stats.
+7. Stats d'écoute (choisies avant l'IA, qui demande une clé payante) :
+   - ✅ 7a. Page `/stats` : import de l'export Spotify (.zip ou .json) lu **dans le navigateur**
+     (Web Worker, rien n'est envoyé), calculs dans `core/stats/` (temps total, écoutes ≥ 30 s,
+     tops, années / mois / jours / heures dans le fuseau local, podcasts à part).
+   - ⏭️ 7b. Enregistrement continu des nouvelles écoutes : hébergement, base de données et tâche
+     planifiée à décider (note dans `docs/decisions/` avant de coder).
+8. Génération de playlist par IA (corriger d'abord le score des sources sans durée,
+   voir `spikes/RESULTS-2.md`).
 
 Mettre cette liste à jour à chaque PR fusionnée.
 
