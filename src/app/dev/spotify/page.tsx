@@ -16,8 +16,8 @@ export default function DevSpotifyPage({ searchParams }: PageProps<"/dev/spotify
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">Test Spotify (dev)</h1>
         <p className="text-sm text-muted-foreground">
-          Vérifie que l&apos;écriture marche en Development Mode : recherche par ISRC, création
-          d&apos;une playlist privée, ajout du titre.
+          Vérifie le provider Spotify contre la vraie API : recherche avec et sans ISRC, création
+          d&apos;une playlist privée, relecture, et refus attendu sur une playlist tierce.
         </p>
       </header>
       {/* Lecture des cookies et de l'URL au moment de la requête : derrière un Suspense. */}

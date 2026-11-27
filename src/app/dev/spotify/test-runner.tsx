@@ -10,7 +10,7 @@ export function TestRunner() {
   return (
     <section aria-labelledby="test-title" className="flex flex-col gap-4">
       <h2 id="test-title" className="text-lg font-semibold">
-        Test d&apos;écriture
+        Test du provider
       </h2>
       <form action={action}>
         <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
