@@ -3,7 +3,13 @@
 import { useId, useState } from "react";
 
 /** Dépôt de l'export Spotify : archive .zip telle quelle, ou fichiers .json. */
-export function ExportDrop({ onFiles }: { onFiles: (files: File[]) => void }) {
+export function ExportDrop({
+  onFiles,
+  loggedIn = false,
+}: {
+  onFiles: (files: File[]) => void;
+  loggedIn?: boolean;
+}) {
   const id = useId();
   const [dragging, setDragging] = useState(false);
 
@@ -43,8 +49,10 @@ export function ExportDrop({ onFiles }: { onFiles: (files: File[]) => void }) {
       </label>
       <div className="flex flex-col gap-1 text-sm text-muted-foreground">
         <p>
-          🔒 Les fichiers sont lus <strong>uniquement sur ton appareil</strong> : rien n&apos;est
-          envoyé ni enregistré.
+          🔒 Les fichiers sont lus <strong>sur ton appareil</strong>
+          {loggedIn
+            ? " : rien n'est envoyé tant que tu ne cliques pas sur « Enregistrer dans mon compte »."
+            : " : rien n'est envoyé ni enregistré."}
         </p>
         <p>
           Pas encore d&apos;export ? Demande-le sur{" "}

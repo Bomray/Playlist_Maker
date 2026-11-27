@@ -158,3 +158,35 @@ describe("lecture et suppression", () => {
     expect((await historySummary(db, otherId)).plays).toBe(1);
   });
 });
+
+describe("règle « l'export fait foi »", () => {
+  it("ignore les écoutes automatiques sur la période couverte par l'import, garde les autres", async () => {
+    await importPlays(
+      db,
+      userId,
+      [play("2024-01-01T10:00:00Z"), play("2024-01-31T10:00:00Z")],
+      "import",
+    );
+    await importPlays(
+      db,
+      userId,
+      [
+        play("2024-01-15T10:00:00Z", { msPlayed: 200_000 }), // dans la période importée : ignorée
+        play("2024-02-10T10:00:00Z", { msPlayed: 200_000 }), // après : gardée
+      ],
+      "api",
+    );
+    expect((await historySummary(db, userId)).plays).toBe(3);
+    const rows = await playsPage(db, userId, null, 100);
+    expect(rows.map((r) => new Date(r[1]).toISOString())).toEqual([
+      "2024-01-01T10:00:00.000Z",
+      "2024-01-31T10:00:00.000Z",
+      "2024-02-10T10:00:00.000Z",
+    ]);
+  });
+
+  it("sans import, toutes les écoutes automatiques comptent", async () => {
+    await importPlays(db, otherId, [play("2024-01-15T10:00:00Z")], "api");
+    expect((await historySummary(db, otherId)).plays).toBe(1);
+  });
+});

@@ -64,3 +64,21 @@ Si l'adresse finale du projet diffère, mettre à jour `SPOTIFY_REDIRECT_URI` da
 
 Changer `TOKEN_ENCRYPTION_KEY` rend les tokens enregistrés illisibles : chacun devra se
 reconnecter à Spotify.
+
+### Enregistrement automatique des écoutes (toutes les heures)
+
+La tâche `.github/workflows/collect.yml` appelle `POST /api/cron/collect` toutes les heures
+(minute 17). Configuration, une seule fois :
+
+1. Générer un secret :
+   `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
+2. Vercel → Settings → Environment Variables : ajouter `CRON_SECRET` (Production, Sensitive),
+   puis redéployer.
+3. GitHub → dépôt → Settings → Secrets and variables → Actions → **New repository secret** :
+   `CRON_SECRET` avec **la même valeur**.
+4. Tester : onglet **Actions** → « Collecte des écoutes » → **Run workflow**. Le journal
+   affiche des compteurs (`users`, `fetched`, `inserted`, `errors`).
+
+GitHub désactive les tâches planifiées d'un dépôt public après **60 jours sans activité** :
+réactiver alors le workflow dans l'onglet Actions. Chaque utilisateur active l'enregistrement
+lui-même sur la page `/stats`.

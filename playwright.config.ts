@@ -8,7 +8,10 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // Une nouvelle tentative en local : sur un serveur de dev qui démarre, la compilation à la
+  // demande (pages, worker de stats) peut dépasser les délais quand les tests tournent en
+  // parallèle. Un vrai bug échoue aux deux essais (et le rapport signale le test « flaky »).
+  retries: process.env.CI ? 2 : 1,
   reporter: "list",
   use: { baseURL: E2E_BASE_URL, trace: "on-first-retry" },
   projects: [

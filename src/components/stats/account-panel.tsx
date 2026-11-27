@@ -115,7 +115,8 @@ function SavedHistory({ plays, onAddExport, onDelete }: Props) {
         <div role="alert" className="flex flex-col gap-2 rounded-md bg-destructive/10 p-2">
           <p>
             Supprimer définitivement les {formatInt(plays)} écoutes enregistrées ? Ton export
-            Spotify n&apos;est pas touché : tu pourras le réimporter.
+            Spotify n&apos;est pas touché : tu pourras le réimporter. L&apos;enregistrement
+            automatique, s&apos;il est activé, continue (tu peux le désactiver ci-dessus).
           </p>
           <div className="flex flex-wrap gap-2">
             <Button

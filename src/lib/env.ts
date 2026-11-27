@@ -29,6 +29,15 @@ const EnvSchema = z.object({
       (v) => v === undefined || v.length >= 32,
       "TOKEN_ENCRYPTION_KEY doit faire au moins 32 caractères",
     ),
+  // Secret partagé avec la tâche planifiée GitHub Actions (collecte toutes les heures).
+  CRON_SECRET: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined))
+    .refine(
+      (v) => v === undefined || v.length >= 32,
+      "CRON_SECRET doit faire au moins 32 caractères",
+    ),
   SPOTIFY_REDIRECT_URI: z.url().default("http://127.0.0.1:3000/callback"),
   SESSION_SECRET: z
     .string()
