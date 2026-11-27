@@ -1,0 +1,89 @@
+{
+  "request": "du rap français mélancolique pour courir",
+  "name": "Spleen en foulée",
+  "summary": {
+    "trouvés": 11,
+    "incertains": 1,
+    "introuvables": 1
+  },
+  "results": [
+    {
+      "demande": "Le goût du sel — Bigflo & Oli",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Le goût du sel — Bigflo & Oli"
+    },
+    {
+      "demande": "Sous une averse — Lonepsi",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Sous une averse — Lonepsi"
+    },
+    {
+      "demande": "Nekketsu — Nekfeu",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Nekketsu — Nekfeu, Crystal Kay"
+    },
+    {
+      "demande": "On verra — Nekfeu",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "On verra — Nekfeu"
+    },
+    {
+      "demande": "La pluie — Orelsan",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "La pluie (feat. Stromae) — Orelsan, Stromae"
+    },
+    {
+      "demande": "Tout va bien — Orelsan",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Tout va bien — Orelsan"
+    },
+    {
+      "demande": "Trop beau — Lomepal",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Trop beau — Lomepal"
+    },
+    {
+      "demande": "Yeux disent — Lomepal",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Yeux disent — Lomepal"
+    },
+    {
+      "demande": "Au DD — PNL",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Au DD — PNL"
+    },
+    {
+      "demande": "Onizuka — PNL",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Onizuka — PNL"
+    },
+    {
+      "demande": "Désaccordé — Vald",
+      "statut": "found",
+      "score": 1,
+      "meilleur": "Désaccordé — Vald"
+    },
+    {
+      "demande": "Les cendres du matin — Lomepal",
+      "statut": "uncertain",
+      "score": 0.647,
+      "meilleur": "Decrescendo — Lomepal"
+    },
+    {
+      "demande": "Courir sous la pluie froide — Nekfeu",
+      "statut": "not_found",
+      "score": 0.489,
+      "meilleur": "Plume — Nekfeu"
+    }
+  ]
+}

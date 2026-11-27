@@ -68,3 +68,23 @@ export function fail(err: unknown): never {
   }
   process.exit(1);
 }
+
+/** Charge `.env.local` à la racine du dépôt s'il existe (scripts lancés sur le PC). */
+export function loadRootEnv(): void {
+  const path = new URL("../.env.local", import.meta.url);
+  try {
+    process.loadEnvFile(path);
+  } catch (e) {
+    // Fichier absent (session cloud) : les variables viennent de l'environnement.
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+  }
+}
+
+export function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    console.error(`Variable ${name} manquante (à mettre dans .env.local à la racine du dépôt).`);
+    process.exit(1);
+  }
+  return value;
+}

@@ -9,7 +9,11 @@
     "deezer": "NODE_USE_ENV_PROXY=1 tsx deezer.ts",
     "deezer:find": "NODE_USE_ENV_PROXY=1 tsx deezer-find-playlist.ts",
     "youtube-music": "NODE_USE_ENV_PROXY=1 tsx youtube-music.ts",
-    "soundcloud": "NODE_USE_ENV_PROXY=1 tsx soundcloud.ts"
+    "soundcloud": "NODE_USE_ENV_PROXY=1 tsx soundcloud.ts",
+    "spotify-stats": "tsx spotify-stats.ts",
+    "youtube-official": "tsx youtube-official.ts",
+    "youtube-write": "tsx youtube-write.ts",
+    "ai-playlist": "tsx ai-playlist.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.11",
