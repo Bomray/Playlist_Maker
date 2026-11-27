@@ -3,10 +3,10 @@ import { type ConversionReport, summarize } from "../../src/core/convert";
 import { matchTrack } from "../../src/core/matching";
 import type { Track } from "../../src/core/models";
 import { seal } from "../../src/lib/crypto-box";
+import { E2E_BASE_URL, E2E_SESSION_SECRET, E2E_USER_ID } from "../env";
 
 // Le serveur n'appelle ni Deezer ni Spotify ici : la route /api/convert est simulée
-// dans le navigateur, et la session Spotify est un cookie factice chiffré avec le
-// même secret que le serveur.
+// dans le navigateur, et la session est celle de l'utilisateur de test préparé en base.
 
 const URI = (n: number) => `spotify:track:${String(n).padStart(22, "0")}`;
 
@@ -53,20 +53,15 @@ export const report: ConversionReport = {
   summary: summarize(results),
 };
 
+/** Session de l'utilisateur de test créé par scripts/e2e-seed.mts (cookie chiffré). */
 export async function signIn(page: Page) {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret) throw new Error("SESSION_SECRET manquant (.env.local)");
-  const session = {
-    accessToken: "faux",
-    refreshToken: "faux",
-    expiresAt: Date.now() + 3_600_000,
-    scope: "playlist-modify-private playlist-read-private user-read-private",
-  };
-  await page
-    .context()
-    .addCookies([
-      { name: "pm_spotify_session", value: seal(session, secret), url: "http://127.0.0.1:3000" },
-    ]);
+  await page.context().addCookies([
+    {
+      name: "pm_session",
+      value: seal({ userId: E2E_USER_ID }, E2E_SESSION_SECRET),
+      url: E2E_BASE_URL,
+    },
+  ]);
 }
 
 export async function mockConvert(page: Page, lines: string) {
