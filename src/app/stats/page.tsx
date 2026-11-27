@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { StatsApp } from "@/components/stats/stats-app";
+import { readSpotifySession } from "@/providers/spotify/session";
 
 export const metadata: Metadata = { title: "Mes stats d'écoute — Playlist Maker" };
 
@@ -17,7 +19,15 @@ export default function StatsPage() {
           Spotify.
         </p>
       </header>
-      <StatsApp />
+      {/* Lecture du cookie de session au moment de la requête : derrière un Suspense. */}
+      <Suspense fallback={<p className="text-sm text-muted-foreground">Chargement…</p>}>
+        <StatsForSession />
+      </Suspense>
     </main>
   );
+}
+
+async function StatsForSession() {
+  const session = await readSpotifySession();
+  return <StatsApp loggedIn={session !== null} />;
 }
