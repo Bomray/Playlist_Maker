@@ -64,6 +64,17 @@ export async function importPlays(
   return z.object({ inserted: z.number() }).parse(rows[0]).inserted;
 }
 
+/**
+ * Règle « l'export fait foi » (décision 0002) : sur la période couverte par l'export importé,
+ * les écoutes enregistrées automatiquement (`api`, durée estimée) sont ignorées à la lecture,
+ * sans être supprimées. `coverage` = première et dernière écoute importée de l'utilisateur.
+ */
+const COVERAGE = `coverage AS (
+  SELECT min(ended_at) AS from_ts, max(ended_at) AS to_ts FROM plays WHERE user_id = $1 AND source = 'import'
+)`;
+const VISIBLE = `NOT (source = 'api' AND coverage.from_ts IS NOT NULL
+  AND ended_at BETWEEN coverage.from_ts AND coverage.to_ts)`;
+
 export interface HistorySummary {
   plays: number;
   first: number | null;
@@ -74,7 +85,8 @@ const toMs = (v: unknown) => (v === null ? null : new Date(v as string | Date).g
 
 export async function historySummary(db: Db, userId: string): Promise<HistorySummary> {
   const rows = await db.query(
-    "SELECT count(*)::int AS plays, min(ended_at) AS first, max(ended_at) AS last FROM plays WHERE user_id = $1",
+    `WITH ${COVERAGE} SELECT count(*)::int AS plays, min(ended_at) AS first, max(ended_at) AS last
+     FROM plays, coverage WHERE user_id = $1 AND ${VISIBLE}`,
     [userId],
   );
   const row = z.object({ plays: z.number(), first: z.unknown(), last: z.unknown() }).parse(rows[0]);
@@ -139,9 +151,10 @@ export async function playsPage(
   limit: number,
 ): Promise<PlayRow[]> {
   const rows = await db.query(
-    `SELECT track_id, (extract(epoch FROM ended_at) * 1000)::bigint AS ended_ms, ms_played, skipped, offline_ts
-     FROM plays
-     WHERE user_id = $1 AND ($2::timestamptz IS NULL OR (ended_at, track_id, ms_played, offline_ts) > ($2::timestamptz, $3::bigint, $5::int, $6::bigint))
+    `WITH ${COVERAGE}
+     SELECT track_id, (extract(epoch FROM ended_at) * 1000)::bigint AS ended_ms, ms_played, skipped, offline_ts
+     FROM plays, coverage
+     WHERE user_id = $1 AND ${VISIBLE} AND ($2::timestamptz IS NULL OR (ended_at, track_id, ms_played, offline_ts) > ($2::timestamptz, $3::bigint, $5::int, $6::bigint))
      ORDER BY ended_at, track_id, ms_played, offline_ts
      LIMIT $4`,
     [
