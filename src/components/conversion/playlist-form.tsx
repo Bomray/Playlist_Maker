@@ -40,8 +40,8 @@ export function PlaylistForm({ onSubmit }: { onSubmit: (url: string) => void }) 
         </Button>
       </div>
       <p id={`${id}-help`} className="text-xs text-muted-foreground">
-        Playlist Deezer publique (lien complet ou lien court partagé depuis l&apos;application), ou
-        une de tes playlists Spotify.
+        Playlist Deezer ou YouTube Music publique (lien complet ou lien court partagé depuis
+        l&apos;application), ou une de tes playlists Spotify.
       </p>
     </form>
   );

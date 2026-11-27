@@ -53,7 +53,7 @@ export function findSourceProvider(
   throw new ProviderError({
     kind: "unsupported",
     provider: null,
-    message: "Lien non reconnu : colle le lien d'une playlist Deezer ou Spotify.",
+    message: "Lien non reconnu : colle le lien d'une playlist Deezer, YouTube Music ou Spotify.",
     detail: url,
   });
 }

@@ -18,6 +18,12 @@ entre plateformes de streaming.
 - **Plus tard** : génération de playlists à partir d'une demande écrite (IA),
   statistiques d'écoute multi-plateformes, filtres personnalisés sauvegardables.
   Ne rien construire pour ces fonctionnalités tant que la V1 n'est pas terminée.
+  - **Stats voulues** : temps d'écoute (minutes, heures, jours) et nombre d'écoutes, par titre,
+    artiste et période. Sources décidées : **import de l'export Spotify** (« Historique de
+    streaming étendu », champ `ms_played`) pour le passé, puis **enregistrement continu des
+    nouvelles écoutes** (`/me/player/recently-played` ne garde que les 50 dernières : il faut
+    l'interroger régulièrement et stocker). Demande un stockage et une tâche planifiée :
+    hébergement à choisir (voir `spikes/RESULTS-2.md`).
 
 ### Avancement de la V1 (Deezer → Spotify)
 
@@ -32,8 +38,9 @@ entre plateformes de streaming.
      NDJSON, voir `lib/conversion-stream.ts`), Server Actions de recherche manuelle et de création.
    - ✅ 5b. Interface sur l'accueil (`components/conversion/`) : lien → progression → récap
      (trouvés / incertains / introuvables) → correction → création. `/dev/spotify` supprimée.
-6. ⏭️ Retours d'usage sur la V1 Deezer → Spotify (qualité du matching sur de vraies
-   playlists), puis 3ᵉ plateforme (YouTube Music).
+6. ✅ YouTube Music comme 2ᵉ source (`providers/youtube-music/`, API officielle, lecture seule).
+7. ⏭️ Génération de playlist par IA (corriger d'abord le score des sources sans durée,
+   voir `spikes/RESULTS-2.md`), puis stats.
 
 Mettre cette liste à jour à chaque PR fusionnée.
 
@@ -117,9 +124,13 @@ Ordre V1 : **Deezer (source) → Spotify (destination)**.
   (ou collaboratives) ; un lien public quelconque renvoie une erreur typée « playlist non
   accessible », et les playlists créées par Spotify (éditoriales, Daily Mix…) répondent 404.
   Development Mode : 5 utilisateurs max. Ne pas supposer qu'un endpoint fonctionne : vérifier.
-- **YouTube Music** : 3ᵉ plateforme, après la V1 Deezer → Spotify. Pas d'API officielle :
-  lecture fragile, recherche bloquée depuis une IP de datacenter, écriture via YouTube
-  Data API v3 (quota serré). Isoler complètement dans `providers/youtube-music/`.
+- **YouTube Music** : **source** via l'**API officielle YouTube Data v3** (les playlists YT Music
+  sont des playlists YouTube), avec la clé développeur `YOUTUBE_API_KEY` envoyée en en-tête
+  `X-goog-api-key` (facultative : sans elle, « non configuré »). Lecture vérifiée 11/11
+  (artiste via la chaîne « Artiste - Topic », durée via `videos.list`) ; ni album ni ISRC,
+  donc matching par score. Quota : 10 000 unités/jour pour toute l'appli (~2 unités pour
+  50 titres en lecture, mais **100 par recherche**) : pas de destination YouTube pour
+  l'instant. Mix (`RD…`) et titres likés (`LM`) illisibles. Ne plus utiliser youtubei.js.
 - **SoundCloud** : **en pause** (enregistrer une app demande un abonnement Artist Pro).
   Ne pas scraper de `client_id`.
 - Les résultats des spikes sont consignés dans `spikes/RESULTS.md` : s'y référer

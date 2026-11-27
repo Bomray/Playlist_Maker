@@ -81,6 +81,15 @@ export function ReviewPanel(props: Props) {
           {countLabel(summary.selected, "titre")} sur {summary.total}{" "}
           {summary.selected > 1 ? "seront ajoutés" : "sera ajouté"}.
         </p>
+        {(report.playlist.unavailableCount ?? 0) > 0 && (
+          <p className="text-sm text-muted-foreground">
+            {countLabel(report.playlist.unavailableCount ?? 0, "titre")} de la playlist
+            d&apos;origine {(report.playlist.unavailableCount ?? 0) > 1 ? "sont" : "est"}{" "}
+            indisponible
+            {(report.playlist.unavailableCount ?? 0) > 1 ? "s" : ""} (supprimé ou privé) et ne peut
+            pas être converti.
+          </p>
+        )}
       </div>
 
       {SECTIONS.map(({ status, title, hint, open }) => {
