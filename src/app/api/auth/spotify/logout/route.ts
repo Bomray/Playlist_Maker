@@ -5,5 +5,5 @@ import { clearSpotifySession, spotifyAppUrl } from "@/providers/spotify/session"
 export async function POST() {
   await clearSpotifySession();
   // 303 : le navigateur suit la redirection en GET.
-  return NextResponse.redirect(spotifyAppUrl("/dev/spotify"), 303);
+  return NextResponse.redirect(spotifyAppUrl("/"), 303);
 }

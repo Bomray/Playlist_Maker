@@ -8,8 +8,8 @@ import {
   spotifyAuthConfig,
 } from "@/providers/spotify/session";
 
-// Tant que l'UI de conversion n'existe pas, on revient sur la page de test.
-const AFTER_LOGIN = "/dev/spotify";
+// Après la connexion, retour sur l'écran de conversion.
+const AFTER_LOGIN = "/";
 
 function backWithError(message: string) {
   const url = spotifyAppUrl(AFTER_LOGIN);

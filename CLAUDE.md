@@ -26,8 +26,10 @@ entre plateformes de streaming.
 5. Conversion de bout en bout, en deux PR :
    - ✅ 5a. Serveur : liens courts Deezer (`expandUrl`), `POST /api/convert` (progression en flux
      NDJSON, voir `lib/conversion-stream.ts`), Server Actions de recherche manuelle et de création.
-   - ⏭️ 5b. Interface (lien → progression → récap → correction → création), puis suppression
-     de la page temporaire `/dev/spotify` et retour sur l'accueil après connexion Spotify.
+   - ✅ 5b. Interface sur l'accueil (`components/conversion/`) : lien → progression → récap
+     (trouvés / incertains / introuvables) → correction → création. `/dev/spotify` supprimée.
+6. ⏭️ Retours d'usage sur la V1 Deezer → Spotify (qualité du matching sur de vraies
+   playlists), puis 3ᵉ plateforme (YouTube Music).
 
 Mettre cette liste à jour à chaque PR fusionnée.
 
@@ -104,7 +106,7 @@ Ordre V1 : **Deezer (source) → Spotify (destination)**.
   Les erreurs arrivent en HTTP 200 avec un objet `error` : toujours valider avec Zod.
 - **Spotify** : destination V1. OAuth Authorization Code + PKCE, `POST /me/playlists`
   puis `POST /playlists/{id}/items` (**écriture vérifiée en Development Mode le
-  27/11/2026** via `/dev/spotify`), recherche par `isrc:` (`limit` ≤ 10, pas d'appels
+  27/11/2026** via l'ancienne page de test `/dev/spotify`), recherche par `isrc:` (`limit` ≤ 10, pas d'appels
   groupés `?ids=`). Scopes : `playlist-modify-private`, `playlist-read-private` et
   `user-read-private` (exigé par `market=from_token`, sinon 403 « Insufficient client
   scope »). Comme source : **seulement les playlists de l'utilisateur connecté**
