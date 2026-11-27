@@ -30,7 +30,8 @@ export function spotifyAuthConfig(): SpotifyAuthConfig {
   };
 }
 
-function accountDeps(): AccountDeps {
+/** Dépendances du compte Spotify (base, clé de chiffrement, configuration OAuth). */
+export function accountDeps(): AccountDeps {
   const key = serverEnv().TOKEN_ENCRYPTION_KEY;
   if (!key) throw new Error("TOKEN_ENCRYPTION_KEY manquante (voir le README).");
   return { db: getDb(), encryptionKey: key, auth: spotifyAuthConfig() };
