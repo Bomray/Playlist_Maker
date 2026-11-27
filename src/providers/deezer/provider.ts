@@ -5,6 +5,7 @@ import type { Playlist, PlaylistRef, Track } from "@/core/models";
 import type { MusicProvider } from "../types";
 import { createDeezerClient, type DeezerClient } from "./client";
 import { type DeezerTrackSchema, DeezerPlaylistSchema, DeezerTracksPageSchema } from "./schemas";
+import { expandDeezerShortLink } from "./short-link";
 import { parseDeezerPlaylistUrl } from "./url";
 
 const PAGE_SIZE = 100;
@@ -37,6 +38,8 @@ export function createDeezerProvider(client: DeezerClient = createDeezerClient()
     id: "deezer",
 
     parsePlaylistUrl: parseDeezerPlaylistUrl,
+
+    expandUrl: (url) => expandDeezerShortLink(url),
 
     async getPlaylist(ref: PlaylistRef): Promise<Playlist> {
       if (ref.provider !== "deezer") {

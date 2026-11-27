@@ -18,6 +18,12 @@ export interface MusicProvider {
   /** Extrait la référence d'une playlist depuis un lien, ou `null` s'il n'est pas reconnu. */
   parsePlaylistUrl(url: string): PlaylistRef | null;
 
+  /**
+   * Facultatif : développe un lien court propre à la plateforme (ex. `link.deezer.com/s/…`)
+   * en lien complet. Renvoie `null` si le lien n'est pas un lien court de cette plateforme.
+   */
+  expandUrl?(url: string): Promise<string | null>;
+
   /** Lit une playlist et tous ses titres (pagination comprise). */
   getPlaylist(ref: PlaylistRef): Promise<Playlist>;
 
