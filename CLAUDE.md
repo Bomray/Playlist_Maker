@@ -89,10 +89,12 @@ Ordre V1 : **Deezer (source) → Spotify (destination)**.
 - **Spotify** : destination V1. OAuth Authorization Code + PKCE, `POST /me/playlists`
   puis `POST /playlists/{id}/items` (**écriture vérifiée en Development Mode le
   27/11/2026** via `/dev/spotify`), recherche par `isrc:` (`limit` ≤ 10, pas d'appels
-  groupés `?ids=`). Comme source : **seulement les playlists de l'utilisateur connecté**
+  groupés `?ids=`). Scopes : `playlist-modify-private`, `playlist-read-private` et
+  `user-read-private` (exigé par `market=from_token`, sinon 403 « Insufficient client
+  scope »). Comme source : **seulement les playlists de l'utilisateur connecté**
   (ou collaboratives) ; un lien public quelconque renvoie une erreur typée « playlist non
-  accessible ». Development Mode : 5 utilisateurs max. Ne pas supposer qu'un endpoint
-  fonctionne : vérifier.
+  accessible », et les playlists créées par Spotify (éditoriales, Daily Mix…) répondent 404.
+  Development Mode : 5 utilisateurs max. Ne pas supposer qu'un endpoint fonctionne : vérifier.
 - **YouTube Music** : 3ᵉ plateforme, après la V1 Deezer → Spotify. Pas d'API officielle :
   lecture fragile, recherche bloquée depuis une IP de datacenter, écriture via YouTube
   Data API v3 (quota serré). Isoler complètement dans `providers/youtube-music/`.

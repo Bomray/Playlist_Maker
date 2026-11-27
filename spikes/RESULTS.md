@@ -193,6 +193,17 @@ compte déclaré dans « User Management »), en **Development Mode** :
 Les `403` signalés par d'autres développeurs ne se produisent pas ici. **Spotify est
 confirmé comme destination V1.**
 
+Vérification du provider Spotify (même jour, `/dev/spotify`) :
+
+- `GET /v1/search?…&market=from_token` → **`403 Insufficient client scope`** sans le scope
+  `user-read-private`. Avec ce scope : OK, recherche par ISRC et par
+  `track:"…" artist:"…"` (titre sans ISRC trouvé).
+- Création d'une playlist avec 2 titres puis relecture via `GET /v1/playlists/{id}/items` :
+  OK pour une playlist de l'utilisateur.
+- `GET /v1/playlists/37i9dQZF1DXcBWIGoYBM5M` (« Today's Top Hits », éditoriale Spotify) →
+  **`404 Resource not found`** : les playlists créées par Spotify sont bloquées pour les
+  nouvelles applications.
+
 ## Comment relancer
 
 ```bash
