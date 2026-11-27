@@ -5,19 +5,19 @@ qui permettrait la **génération de playlists par IA**, les **stats d'écoute**
 **connexion à YouTube Music**, avec un principe décidé en cours de route :
 **l'utilisateur final ne crée aucun compte supplémentaire** (voir CLAUDE.md).
 
-> Statut : brouillon. Les sections marquées ⏳ attendent les scripts lancés sur le PC
-> (connexion dans le navigateur ou clé développeur Google).
+> Statut : complet, sauf l'écriture YouTube (⏳), bloquée tant que le compte de test n'est
+> pas déclaré dans Google Cloud (voir § 4).
 
-## Synthèse (provisoire)
+## Synthèse
 
 | Fonctionnalité | Faisable ? | Compte pour l'utilisateur | Clé développeur | Limites principales |
 |---|---|---|---|---|
 | Génération de playlist par IA → Spotify | ✅ Chaîne vérifiée (sauf l'appel au modèle) | Spotify (déjà) | Clé API Claude (payante) | Les titres inventés par l'IA doivent être détectés (voir ci-dessous) |
-| Stats Spotify via l'API | ⏳ | Spotify (déjà) | Spotify (déjà) | ⏳ |
+| Stats Spotify via l'API | ✅ Tops titres et artistes sur 3 périodes | Spotify (déjà) | Spotify (déjà) | Historique récent limité aux **50 dernières écoutes** ; genres vides |
 | Stats par import des exports | 📄 Documenté, pas testé | Aucun (fichier) | Aucune | Délai de plusieurs jours à ~30 jours pour obtenir l'export |
 | Lecture YouTube Music (API officielle) | ✅ **11/11 titres**, artiste et durée corrects | Aucun (playlist publique) | Projet Google Cloud (gratuit) | Pas d'album ni d'ISRC. Quota : ~2 unités pour 50 titres |
 | Recherche YouTube (API officielle) | ⚠️ Marche, mais résultats bruités | Aucun | Projet Google Cloud | **100 unités par recherche** → ~100 recherches par jour pour toute l'appli |
-| Écriture YouTube Music (API officielle) | ⏳ | Google (déjà) | Projet Google Cloud + OAuth | 50 unités par playlist + 50 par titre, sur 10 000 par jour |
+| Écriture YouTube Music (API officielle) | ⏳ Bloquée en mode test (`403 access_denied`) | Google (déjà) | Projet Google Cloud + OAuth | 50 unités par playlist + 50 par titre ; vérification Google pour sortir du mode test |
 | Stats unifiées via Last.fm | ❌ Écarté | Last.fm (à créer) | Clé Last.fm | Contraire au principe : chaque utilisateur devrait créer un compte |
 
 ## 1. Prototype « demande écrite → playlist » — `pnpm ai-playlist` ✅
@@ -58,11 +58,31 @@ similarité de titre minimale (par ex. ≥ 0,6) pour classer « incertain ». Si
   À mesurer pour de vrai.
 - Clé API Claude côté développeur seulement : invisible pour l'utilisateur.
 
-## 2. Stats Spotify via l'API — `pnpm spotify-stats` ⏳
+## 2. Stats Spotify via l'API — `pnpm spotify-stats` ✅
 
-À lancer sur le PC (connexion Spotify dans le navigateur, app arrêtée). Le script teste
-`/me/top/tracks` (3 périodes), `/me/top/artists` et `/me/player/recently-played` (avec
-pagination, pour voir jusqu'où remonte l'historique).
+Lancé sur le PC le 27/11/2026, avec le compte Spotify existant (scopes `user-top-read` et
+`user-read-recently-played`, Development Mode). Sortie, sans les titres personnels :
+[`output/spotify-stats.json`](./output/spotify-stats.json).
+
+| Requête | Résultat |
+|---|---|
+| `/me/top/tracks`, `short_term` (~4 semaines) | ✅ 50 titres, ISRC sur 50 |
+| `/me/top/tracks`, `medium_term` (~6 mois) | ✅ 50 titres, ISRC sur 50 |
+| `/me/top/tracks`, `long_term` (~1 an) | ✅ 50 titres, ISRC sur 50 |
+| `/me/top/artists`, `medium_term` | ✅ 50 artistes, mais **genres vides sur les 50** |
+| `/me/player/recently-played` | ✅ 50 écoutes, puis **0** en remontant avec `before` |
+
+Ce que ça permet :
+- **Tops personnels** (« ton top du mois / de l'année »), tout de suite, sans base de données.
+- L'ISRC sur chaque titre permet de croiser avec les autres plateformes.
+
+Limites :
+- **Historique détaillé : seulement les 50 dernières écoutes** (ici environ 8 h). Pour des
+  stats « vraies » (temps d'écoute, évolution), il faudrait interroger cette route
+  régulièrement (au moins toutes les quelques heures) et **stocker** les écoutes. Cela
+  demande une base de données et une tâche planifiée, ou l'import des exports (§ 3).
+- **Genres vides** : Spotify ne les fournit plus. Pour des filtres ou stats par genre, il
+  faudra une autre source, par exemple demander à l'IA de classer les artistes.
 
 ## 3. Stats par import des exports de données 📄
 
@@ -118,13 +138,50 @@ proprement dès maintenant. **Comme destination**, c'est limité par le quota : 
 
 ### Écriture — `pnpm youtube-write` ⏳
 
-À lancer sur le PC (identifiants OAuth « Application de bureau »). Teste
-`playlists.insert` (privée) puis `playlistItems.insert`.
+Lancé sur le PC le 27/11/2026 : bloqué à la connexion Google, avec la page « Accès bloqué :
+Playlist Maker n'a pas terminé la procédure de validation de Google » et
+**`Erreur 403 : access_denied`**.
+
+Cause : le projet Google Cloud est en mode **Test**, où seuls les « utilisateurs test »
+déclarés peuvent se connecter (100 au maximum). À faire : Google Auth Platform → Audience
+→ Utilisateurs test → ajouter le compte, puis relancer.
+
+Pour un usage public, il faudra **faire valider l'appli par Google**, car le scope
+`youtube` est sensible (procédure de vérification à confirmer). C'est l'équivalent du
+plafond de 5 utilisateurs de Spotify, mais avec une porte de sortie.
 
 Note technique : le secret réseau de la session cloud ne peut pas être envoyé dans
 l'en-tête `X-goog-api-key` (seuls certains formats d'en-tête sont acceptés). La clé passe
 donc par `.env.local` et le script est lancé sur le PC.
 
-## Recommandation (provisoire)
+## Recommandation
 
-À compléter avec les résultats ⏳.
+**L'appli garde son intérêt, à condition d'en faire un « assistant musical » centré sur
+le compte Spotify de l'utilisateur, plutôt qu'un convertisseur universel.**
+
+Ce qui marche aujourd'hui, sans aucun compte en plus pour l'utilisateur :
+
+| Fonctionnalité | État |
+|---|---|
+| Conversion Deezer → Spotify | ✅ Livrée (V1) |
+| Conversion YouTube Music → Spotify | ✅ Faisable proprement avec l'API officielle (lecture vérifiée 11/11) |
+| Génération de playlist par IA → Spotify | ✅ Chaîne vérifiée, ~0,03 € par playlist, titres inventés détectés |
+| Tops personnels (mois, 6 mois, année) | ✅ API Spotify, sans base de données |
+| Historique complet et stats détaillées | 📄 Par import des exports (Spotify, Google), ou par collecte régulière avec stockage |
+| Conversion Spotify → YouTube Music | ⚠️ Possible mais ~2 playlists de 30 titres par jour pour toute l'appli (quota) |
+
+Ce qui reste hors de portée pour un **site public** :
+- **Spotify en Development Mode : 5 utilisateurs maximum.** C'est la vraie limite du projet.
+  Pour un usage personnel ou entre amis, aucun problème.
+- Deezer et SoundCloud en écriture.
+
+**Ordre proposé** :
+1. **Terminer la V1 avec YouTube Music comme 2ᵉ source** : provider `youtube-music` sur
+   l'API officielle (clé développeur, lecture seule, petit quota), avec le même écran de
+   conversion.
+2. **Génération de playlist par IA** : le plus fort intérêt pour un effort raisonnable,
+   puisque matching, récap et création existent déjà. Avant ça : corriger le score des
+   sources sans durée (§ 1).
+3. **Stats** : d'abord les tops Spotify (sans stockage), puis l'import des exports pour
+   l'historique complet. La collecte régulière viendrait seulement si une base de données
+   est ajoutée (décision à prendre plus tard).
