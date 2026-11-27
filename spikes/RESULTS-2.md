@@ -15,8 +15,9 @@ qui permettrait la **génération de playlists par IA**, les **stats d'écoute**
 | Génération de playlist par IA → Spotify | ✅ Chaîne vérifiée (sauf l'appel au modèle) | Spotify (déjà) | Clé API Claude (payante) | Les titres inventés par l'IA doivent être détectés (voir ci-dessous) |
 | Stats Spotify via l'API | ⏳ | Spotify (déjà) | Spotify (déjà) | ⏳ |
 | Stats par import des exports | 📄 Documenté, pas testé | Aucun (fichier) | Aucune | Délai de plusieurs jours à ~30 jours pour obtenir l'export |
-| Lecture YouTube Music (API officielle) | ⏳ | Aucun (playlist publique) | Projet Google Cloud (gratuit) | Quota : 1 unité par page de 50 titres |
-| Écriture YouTube Music (API officielle) | ⏳ | Google (déjà) | Projet Google Cloud + OAuth | 100 unités par playlist + 50 par titre, sur 10 000 par jour |
+| Lecture YouTube Music (API officielle) | ✅ **11/11 titres**, artiste et durée corrects | Aucun (playlist publique) | Projet Google Cloud (gratuit) | Pas d'album ni d'ISRC. Quota : ~2 unités pour 50 titres |
+| Recherche YouTube (API officielle) | ⚠️ Marche, mais résultats bruités | Aucun | Projet Google Cloud | **100 unités par recherche** → ~100 recherches par jour pour toute l'appli |
+| Écriture YouTube Music (API officielle) | ⏳ | Google (déjà) | Projet Google Cloud + OAuth | 50 unités par playlist + 50 par titre, sur 10 000 par jour |
 | Stats unifiées via Last.fm | ❌ Écarté | Last.fm (à créer) | Clé Last.fm | Contraire au principe : chaque utilisateur devrait créer un compte |
 
 ## 1. Prototype « demande écrite → playlist » — `pnpm ai-playlist` ✅
@@ -84,11 +85,41 @@ un vrai export) :
 Combinaison visée : **API Spotify pour le récent + import pour l'historique complet**. Les
 stats YouTube et Deezer ne seraient possibles que par import.
 
-## 4. YouTube via l'API officielle — `pnpm youtube-official` / `pnpm youtube-write` ⏳
+## 4. YouTube via l'API officielle
 
-Lecture (`playlistItems.list`, `videos.list`) et recherche (`search.list`) avec la clé
-développeur ; écriture (`playlists.insert`, `playlistItems.insert`) avec le compte Google
-existant de l'utilisateur.
+### Lecture et recherche — `pnpm youtube-official` ✅
+
+Lancé sur le PC le 27/11/2026, avec la clé développeur dans `.env.local`. Sortie :
+[`output/youtube-official.json`](./output/youtube-official.json).
+
+**Lecture : bien meilleure que youtubei.js au spike 1.**
+- `playlistItems.list` + `videos.list` : **11/11 titres** avec titre, artiste, durée et
+  videoId, en ~2 unités de quota.
+- Pas de titres « grisés » : on n'est plus lié à l'IP ni à une API interne qui peut casser.
+- La règle « chaîne `Artiste - Topic` → artiste » a donné le bon artiste sur les 11 titres,
+  y compris « Bigflo & Oli » (non découpé) et le titre à tiret « Jamais rentré - Nouvelle
+  École x CUPRA ».
+- Manquent : l'album et l'ISRC. Le matching vers Spotify se fera donc par score (titre,
+  artiste, durée), comme pour le contrôle de réalisme de l'étape 4, qui avait trouvé 11/11.
+
+**Recherche : elle marche, mais elle coûte cher et elle est bruitée.**
+- `search.list` répond, alors qu'InnerTube était bloqué au spike 1.
+- Les résultats mélangent la vidéo officielle, des copies (« LYRICS », « 8D MUSIC ») et
+  d'autres titres du même artiste. Les titres arrivent échappés en HTML (`&amp;`).
+- Coût : **100 unités par recherche**. Avec 10 000 unités par jour **pour toute l'appli**,
+  c'est environ 100 titres cherchés par jour. En ajoutant l'insertion (50 unités par titre),
+  une conversion vers YouTube coûte ~150 unités par titre : **~65 titres par jour, soit
+  2 playlists de 30 titres** pour toute l'appli.
+
+**Conséquence** : **YouTube Music comme source** (YT Music → Spotify) est faisable
+proprement dès maintenant. **Comme destination**, c'est limité par le quota : à réserver
+à un petit nombre d'utilisateurs, ou après avoir obtenu une augmentation de quota
+(formulaire d'audit Google). Il faudrait aussi préférer les résultats des chaînes « - Topic ».
+
+### Écriture — `pnpm youtube-write` ⏳
+
+À lancer sur le PC (identifiants OAuth « Application de bureau »). Teste
+`playlists.insert` (privée) puis `playlistItems.insert`.
 
 Note technique : le secret réseau de la session cloud ne peut pas être envoyé dans
 l'en-tête `X-goog-api-key` (seuls certains formats d'en-tête sont acceptés). La clé passe

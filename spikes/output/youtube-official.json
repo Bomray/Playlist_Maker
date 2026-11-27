@@ -1,0 +1,128 @@
+{
+  "platform": "youtube-official",
+  "url": "https://music.youtube.com/playlist?list=PLSOL9LfGEGu0",
+  "playlist": {
+    "id": "PLSOL9LfGEGu0",
+    "name": null,
+    "trackCount": 11
+  },
+  "tracks": [
+    {
+      "title": "Lie",
+      "artists": [
+        "NF"
+      ],
+      "album": null,
+      "durationMs": 210000,
+      "isrc": null,
+      "platformId": "1k5QIbweEmU"
+    },
+    {
+      "title": "Goodbye",
+      "artists": [
+        "The Kid LAROI"
+      ],
+      "album": null,
+      "durationMs": 162000,
+      "isrc": null,
+      "platformId": "5K8yT7QIVHY"
+    },
+    {
+      "title": "Nekketsu",
+      "artists": [
+        "Nekfeu"
+      ],
+      "album": null,
+      "durationMs": 215000,
+      "isrc": null,
+      "platformId": "J4CKkE3EBm8"
+    },
+    {
+      "title": "Jamais rentré - Nouvelle École x CUPRA",
+      "artists": [
+        "Nouvelle École"
+      ],
+      "album": null,
+      "durationMs": 211000,
+      "isrc": null,
+      "platformId": "N4yvo7aIRts"
+    },
+    {
+      "title": "JEUNE MALAGASY",
+      "artists": [
+        "JYEUHAIR"
+      ],
+      "album": null,
+      "durationMs": 136000,
+      "isrc": null,
+      "platformId": "StxCxamGrto"
+    },
+    {
+      "title": "Le goût du sel",
+      "artists": [
+        "Bigflo & Oli"
+      ],
+      "album": null,
+      "durationMs": 187000,
+      "isrc": null,
+      "platformId": "FhLXAwBGX3U"
+    },
+    {
+      "title": "DONT WANT IT",
+      "artists": [
+        "Lil Nas X"
+      ],
+      "album": null,
+      "durationMs": 131000,
+      "isrc": null,
+      "platformId": "1m0gYENb9R4"
+    },
+    {
+      "title": "Sous une averse",
+      "artists": [
+        "Lonepsi"
+      ],
+      "album": null,
+      "durationMs": 143000,
+      "isrc": null,
+      "platformId": "ZdQjq2x_Op4"
+    },
+    {
+      "title": "Hide",
+      "artists": [
+        "Juice WRLD"
+      ],
+      "album": null,
+      "durationMs": 206000,
+      "isrc": null,
+      "platformId": "uYHNdTPV7pM"
+    },
+    {
+      "title": "Sad Nibba Hours",
+      "artists": [
+        "PapiTHBK"
+      ],
+      "album": null,
+      "durationMs": 151000,
+      "isrc": null,
+      "platformId": "t60QJS41AnQ"
+    },
+    {
+      "title": "My Songs Know What You Did In The Dark (Light Em Up)",
+      "artists": [
+        "Fall Out Boy"
+      ],
+      "album": null,
+      "durationMs": 187000,
+      "isrc": null,
+      "platformId": "6LUon6zLyTM"
+    }
+  ],
+  "notes": [
+    "Lancé sur le PC de l'utilisateur le 27/11/2026 (clé dans YOUTUBE_API_KEY).",
+    "playlistItems.list OK : 11 titres, privacyStatus=public.",
+    "videos.list OK : durée connue pour 11 vidéos.",
+    "search.list OK pour « Le goût du sel Bigflo Oli » : Bigflo &amp; Oli - LE GOÛT DU SEL 🌀 (Bigflo et Oli) | Bigflo &amp; Oli - Le goût du sel [Karma] (CRUSUAL 2) | Bigflo &amp; Oli - Le goût du sel (LYRICS) (LIGHTFOX ARTS DIFFUSION 🌠) | Bigflo &amp; Oli - Le goût du sel (8D MUSIC) (LIGHTFOX ARTS DIFFUSION 🌠) | Bigflo &amp; Oli - KARMA 🌀 (Bigflo et Oli)",
+    "Quota consommé : environ 102 unités sur 10 000 par jour."
+  ]
+}
