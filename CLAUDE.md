@@ -43,8 +43,11 @@ entre plateformes de streaming.
    - ✅ 7a. Page `/stats` : import de l'export Spotify (.zip ou .json) lu **dans le navigateur**
      (Web Worker, rien n'est envoyé), calculs dans `core/stats/` (temps total, écoutes ≥ 30 s,
      tops, années / mois / jours / heures dans le fuseau local, podcasts à part).
-   - ⏭️ 7b. Enregistrement continu des nouvelles écoutes : hébergement, base de données et tâche
-     planifiée à décider (note dans `docs/decisions/` avant de coder).
+   - ⏭️ 7b. Enregistrement continu des nouvelles écoutes, décidé dans
+     `docs/decisions/0002-enregistrement-continu-des-ecoutes.md` : **Vercel** (hébergement),
+     **Neon** (PostgreSQL : utilisateurs, tokens chiffrés, historique importé et écoutes),
+     **GitHub Actions** toutes les heures → `POST /api/cron/collect`. Quatre PR : mise en
+     ligne → base et session en base → import vers la base → collecte.
 8. Génération de playlist par IA (corriger d'abord le score des sources sans durée,
    voir `spikes/RESULTS-2.md`).
 

@@ -1,5 +1,8 @@
 # 0001 — Session Spotify dans un cookie chiffré
 
+> Remplacée en partie par la décision 0002 : les tokens passeront en base de données
+> (le cookie ne gardera que l'identifiant de session).
+
 Date : 27 novembre 2026
 
 ## Contexte
