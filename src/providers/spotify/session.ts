@@ -1,6 +1,7 @@
 // Session : un cookie chiffré httpOnly qui ne contient que l'identifiant de l'utilisateur.
 // Les tokens Spotify sont en base, chiffrés (décision 0002, remplace en partie la 0001).
 import "server-only";
+import { connection } from "next/server";
 import { z } from "zod";
 import { ProviderError } from "@/core/errors";
 import { DatabaseNotConfiguredError, getDb } from "@/lib/db";
@@ -78,6 +79,9 @@ export interface SessionInfo {
 export async function readSpotifySession(): Promise<SessionInfo | null> {
   const session = await readSealedCookie(SESSION_COOKIE, SessionSchema);
   if (!session) return null;
+  // Lecture en base : propre à la requête, jamais pré-rendue (sinon Next.js signale l'appel
+  // à Date.now() fait par le pilote pendant le pré-rendu).
+  await connection();
   try {
     const user = await findUserById(getDb(), session.userId);
     return user ? { userId: user.id, displayName: user.display_name, scope: user.scope } : null;
@@ -102,4 +106,17 @@ export async function getSpotifyAccessToken(minValidityMs?: number): Promise<str
     });
   }
   return getValidAccessToken(accountDeps(), session.userId, minValidityMs);
+}
+
+/** Identifiant de l'utilisateur connecté (vérifié en base), ou erreur « non connecté ». */
+export async function requireUserId(): Promise<string> {
+  const session = await readSpotifySession();
+  if (!session) {
+    throw new ProviderError({
+      kind: "unauthorized",
+      provider: "spotify",
+      message: "Connecte-toi à Spotify pour enregistrer tes écoutes.",
+    });
+  }
+  return session.userId;
 }

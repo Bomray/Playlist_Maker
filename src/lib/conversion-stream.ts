@@ -2,6 +2,7 @@
 // (NDJSON). Partagé entre le Route Handler (écriture) et le navigateur (lecture).
 import { z } from "zod";
 import type { ConversionReport } from "@/core/convert";
+import { ndjsonLine, readNdjson } from "./ndjson";
 import type { UserError } from "./user-error";
 
 export type ConversionEvent =
@@ -39,31 +40,15 @@ const EventSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-export const NDJSON_CONTENT_TYPE = "application/x-ndjson; charset=utf-8";
+export { NDJSON_CONTENT_TYPE } from "./ndjson";
 
 export function encodeEvent(event: ConversionEvent): string {
-  return `${JSON.stringify(event)}\n`;
+  return ndjsonLine(event);
 }
 
 /** Lit un flux NDJSON et renvoie les événements au fur et à mesure qu'ils arrivent. */
-export async function* readConversionEvents(
+export function readConversionEvents(
   body: ReadableStream<Uint8Array>,
 ): AsyncGenerator<ConversionEvent> {
-  const reader = body.getReader();
-  // `stream: true` : un caractère UTF-8 peut être coupé entre deux morceaux reçus.
-  const decoder = new TextDecoder();
-  let buffer = "";
-  for (;;) {
-    const { value, done } = await reader.read();
-    buffer += value ? decoder.decode(value, { stream: true }) : decoder.decode();
-    // Un morceau reçu peut contenir plusieurs lignes, ou une ligne coupée en deux.
-    let newline: number;
-    while ((newline = buffer.indexOf("\n")) >= 0) {
-      const line = buffer.slice(0, newline).trim();
-      buffer = buffer.slice(newline + 1);
-      if (line) yield EventSchema.parse(JSON.parse(line)) as ConversionEvent;
-    }
-    if (done) break;
-  }
-  if (buffer.trim()) yield EventSchema.parse(JSON.parse(buffer)) as ConversionEvent;
+  return readNdjson(body, (v) => EventSchema.parse(v) as ConversionEvent);
 }
