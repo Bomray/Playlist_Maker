@@ -170,3 +170,7 @@ __pycache__/
 /test-results/
 /blob-report/
 /playwright/.cache/
+
+# Base PGlite des tests de bout en bout
+/.e2e-db/
+/.dev-db/

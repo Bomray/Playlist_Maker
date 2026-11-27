@@ -39,6 +39,7 @@ function exportZip(): Buffer {
 }
 
 test("export .zip → chiffres clés, tops et filtre par année", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto("/stats");
   await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
     name: "my_spotify_data.zip",
@@ -48,8 +49,8 @@ test("export .zip → chiffres clés, tops et filtre par année", async ({ page 
 
   // 5 h d'écoute de musique (5 × 1 h + 5 s), 5 écoutes (la lecture de 5 s ne compte pas).
   const tiles = page.getByRole("region", { name: "Chiffres clés" });
-  // Délai plus long : en dev, le worker est compilé à sa première utilisation.
-  await expect(tiles).toContainText("300minutes d'écoute", { timeout: 20_000 });
+  // Délai long : sur un serveur qui démarre, le worker est compilé à sa première utilisation.
+  await expect(tiles).toContainText("300minutes d'écoute", { timeout: 60_000 });
   await expect(tiles).toContainText("5heures");
   await expect(tiles).toContainText("5écoutes");
   await expect(tiles).toContainText("Podcasts");
@@ -72,6 +73,6 @@ test("fichier sans historique : message clair", async ({ page }) => {
   // Filtre : Next.js ajoute sa propre zone role="alert" (annonce des changements de page).
   await expect(page.getByRole("alert").filter({ hasText: "Lecture impossible" })).toContainText(
     "Aucun historique d'écoute trouvé",
-    { timeout: 20_000 },
+    { timeout: 60_000 },
   );
 });

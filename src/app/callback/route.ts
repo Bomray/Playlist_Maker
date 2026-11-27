@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { ProviderError } from "@/core/errors";
+import { DatabaseNotConfiguredError } from "@/lib/db";
 import { exchangeCode } from "@/providers/spotify/auth";
 import {
   consumeOAuthState,
-  saveSpotifyTokens,
+  saveLogin,
   spotifyAppUrl,
   spotifyAuthConfig,
 } from "@/providers/spotify/session";
@@ -32,15 +33,28 @@ export async function GET(request: NextRequest) {
     return backWithError("Paramètre state invalide (tentative de connexion non reconnue).");
   }
 
+  let tokens;
   try {
-    const tokens = await exchangeCode(spotifyAuthConfig(), { code, codeVerifier: saved.verifier });
-    await saveSpotifyTokens(tokens);
+    tokens = await exchangeCode(spotifyAuthConfig(), { code, codeVerifier: saved.verifier });
   } catch (e) {
     if (e instanceof ProviderError) {
       return backWithError(
         `Échange du code refusé (HTTP ${e.status ?? "?"}) : ${e.detail ?? e.message}`,
       );
     }
+    throw e;
+  }
+
+  try {
+    // Lecture du profil Spotify, puis utilisateur enregistré en base (tokens chiffrés).
+    await saveLogin(tokens);
+  } catch (e) {
+    if (e instanceof ProviderError) {
+      return backWithError(
+        `Lecture du profil Spotify refusée (HTTP ${e.status ?? "?"}) : ${e.message}`,
+      );
+    }
+    if (e instanceof DatabaseNotConfiguredError) return backWithError(e.message);
     throw e;
   }
 

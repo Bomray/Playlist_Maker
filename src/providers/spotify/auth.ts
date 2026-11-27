@@ -10,6 +10,9 @@ export const SPOTIFY_SCOPES = [
   // Nécessaire pour `market=from_token` dans la recherche (sinon HTTP 403
   // « Insufficient client scope ») : pays et type d'abonnement, pas l'e-mail.
   "user-read-private",
+  // Enregistrement continu des écoutes (décision 0002) : demandé dès maintenant, car le
+  // passage de la session en base impose de toute façon une reconnexion.
+  "user-read-recently-played",
 ] as const;
 
 /** Scopes demandés par l'app mais absents d'une session (connexion faite avant leur ajout). */

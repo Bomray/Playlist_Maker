@@ -10,7 +10,7 @@ entre plateformes de streaming.
 
 - **V1 (en cours)** : convertir une playlist d'une plateforme vers une autre en un clic,
   à partir de son lien. Plateformes visées : Spotify, YouTube Music, Deezer, SoundCloud.
-  Pas de système de comptes pour l'instant.
+  Pas de comptes propres à l'appli : on se connecte avec Spotify (utilisateur en base).
 - **Principe : l'utilisateur final ne crée aucun compte supplémentaire.** Il se connecte
   seulement avec ses comptes existants (Spotify, Google/YouTube…). Les clés développeur
   (Spotify, Google Cloud…) sont créées une fois par le développeur et restent invisibles.
@@ -46,8 +46,15 @@ entre plateformes de streaming.
    - ⏭️ 7b. Enregistrement continu des nouvelles écoutes, décidé dans
      `docs/decisions/0002-enregistrement-continu-des-ecoutes.md` : **Vercel** (hébergement),
      **Neon** (PostgreSQL : utilisateurs, tokens chiffrés, historique importé et écoutes),
-     **GitHub Actions** toutes les heures → `POST /api/cron/collect`. Quatre PR : mise en
-     ligne → base et session en base → import vers la base → collecte.
+     **GitHub Actions** toutes les heures → `POST /api/cron/collect`. Quatre PR :
+     - ✅ Mise en ligne : https://playlist-maker-bomray.vercel.app
+     - ✅ Base et session en base : `src/lib/db/` (pilote Neon, requêtes SQL à la main,
+       migrations `db/migrations/*.sql` appliquées au build de production), table `users`,
+       tokens chiffrés (`TOKEN_ENCRYPTION_KEY`), cookie `pm_session` = identifiant seul
+       (`providers/spotify/session.ts`, `account.ts`). Tests SQL avec PGlite ; e2e sur un
+       serveur dédié (port 3100, base PGlite préremplie par `scripts/e2e-seed.mts`).
+     - ⏭️ Import de l'export vers la base, stats calculées depuis la base.
+     - Collecte toutes les heures (scope `user-read-recently-played` déjà demandé).
 8. Génération de playlist par IA (corriger d'abord le score des sources sans durée,
    voir `spikes/RESULTS-2.md`).
 
@@ -76,6 +83,7 @@ pnpm test           # tests unitaires (Vitest)
 pnpm test:e2e       # tests Playwright
 pnpm lint           # ESLint
 pnpm typecheck      # tsc --noEmit
+pnpm db:migrate     # migrations SQL sur DATABASE_URL (Neon)
 ```
 
 Avant de considérer une tâche terminée : `pnpm lint && pnpm typecheck && pnpm test` passent.

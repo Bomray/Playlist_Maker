@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 127.0.0.1 -p 3000",
-    "build": "next build",
+    "build": "node --experimental-strip-types --no-warnings scripts/migrate.mts && next build",
     "start": "next start -H 127.0.0.1 -p 3000",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -12,10 +12,12 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:migrate": "node --experimental-strip-types --no-warnings scripts/migrate.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
+    "@neondatabase/serverless": "1.2.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
     "fflate": "0.8.3",
@@ -29,6 +31,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.16",
     "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
