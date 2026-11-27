@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { strToU8, zipSync } from "fflate";
+import { signIn } from "./fixtures/conversion";
+
+// Sur un serveur qui démarre, le worker est compilé à sa première utilisation (plusieurs
+// secondes, davantage quand les tests tournent en parallèle) : marge large pour tout le fichier.
+test.describe.configure({ timeout: 90_000 });
 
 // Export inventé : 3 écoutes de « Titre A » et 1 de « Titre B » en 2024, 1 en 2025,
 // 1 lecture passée (< 30 s) et 1 épisode de podcast.
@@ -39,7 +44,6 @@ function exportZip(): Buffer {
 }
 
 test("export .zip → chiffres clés, tops et filtre par année", async ({ page }) => {
-  test.setTimeout(90_000);
   await page.goto("/stats");
   await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
     name: "my_spotify_data.zip",
@@ -75,4 +79,39 @@ test("fichier sans historique : message clair", async ({ page }) => {
     "Aucun historique d'écoute trouvé",
     { timeout: 60_000 },
   );
+});
+
+test("connecté : enregistrer l'export, le retrouver, puis le supprimer", async ({
+  page,
+}, testInfo) => {
+  // Une seule exécution : desktop et mobile partagent l'utilisateur de test et son historique.
+  test.skip(testInfo.project.name !== "desktop", "parcours avec écriture en base : une seule fois");
+  await signIn(page);
+  // Point de départ propre (le serveur de test peut être réutilisé d'une exécution à l'autre).
+  await page.request.delete("/api/stats/history");
+
+  await page.goto("/stats");
+  await expect(page.getByText("Aucun historique enregistré dans ton compte")).toBeVisible({
+    timeout: 60_000,
+  });
+
+  await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+    name: "my_spotify_data.zip",
+    mimeType: "application/zip",
+    buffer: exportZip(),
+  });
+  const tiles = page.getByRole("region", { name: "Chiffres clés" });
+  await expect(tiles).toContainText("5écoutes", { timeout: 60_000 });
+
+  await page.getByRole("button", { name: "Enregistrer dans mon compte" }).click();
+  await expect(page.getByText(/7 nouvelles/)).toBeVisible();
+
+  // Rechargement : l'historique vient maintenant du compte, sans redéposer le fichier.
+  await page.reload();
+  await expect(page.getByText("7 écoutes enregistrées")).toBeVisible({ timeout: 60_000 });
+  await expect(tiles).toContainText("5écoutes");
+
+  await page.getByRole("button", { name: "Supprimer mes données d'écoute" }).click();
+  await page.getByRole("button", { name: "Oui, tout supprimer" }).click();
+  await expect(page.getByText("7 écoutes supprimées de ton compte.")).toBeVisible();
 });

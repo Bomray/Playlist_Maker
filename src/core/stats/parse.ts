@@ -16,6 +16,11 @@ export interface Play {
   /** URI Spotify (`spotify:track:…`) quand l'export le donne. */
   uri: string | null;
   skipped: boolean | null;
+  /**
+   * Horodatage hors ligne de l'export (`offline_timestamp`), 0 s'il est absent. Les écoutes
+   * hors ligne synchronisées ensemble partagent la même date de fin : ce champ les distingue.
+   */
+  offlineTs: number;
 }
 
 // Format « étendu » (Streaming_History_Audio_*.json, Streaming_History_Video_*.json).
@@ -30,6 +35,7 @@ const ExtendedEntry = z.object({
   episode_name: z.string().nullish(),
   episode_show_name: z.string().nullish(),
   skipped: z.boolean().nullish(),
+  offline_timestamp: z.number().nullish(),
 });
 
 // Format « Données du compte » (StreamingHistory_music_*.json, StreamingHistory_podcast_*.json).
@@ -65,7 +71,12 @@ function parseDate(value: string): number | null {
 function fromExtended(e: z.infer<typeof ExtendedEntry>): Play | null {
   const endedAt = parseDate(e.ts);
   if (endedAt === null) return null;
-  const common = { endedAt, msPlayed: e.ms_played, skipped: e.skipped ?? null };
+  const common = {
+    endedAt,
+    msPlayed: e.ms_played,
+    skipped: e.skipped ?? null,
+    offlineTs: e.offline_timestamp ?? 0,
+  };
   if (e.master_metadata_track_name) {
     return {
       ...common,
@@ -105,6 +116,7 @@ function fromEntry(raw: unknown): Play | null {
       album: null,
       uri: null,
       skipped: null,
+      offlineTs: 0,
     };
   }
   const podcast = AccountPodcastEntry.safeParse(raw);
@@ -120,6 +132,7 @@ function fromEntry(raw: unknown): Play | null {
       album: null,
       uri: null,
       skipped: null,
+      offlineTs: 0,
     };
   }
   return null;

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { Stats } from "@/core/stats";
 import { type Column, ColumnChart } from "./column-chart";
+import { AccountPanel } from "./account-panel";
 import { ExportDrop } from "./export-drop";
 import { formatDate, formatInt, monthLabels, WEEKDAY_LABELS, WEEKDAY_NAMES } from "./format";
 import { KpiTiles } from "./kpi-tiles";
@@ -46,17 +47,37 @@ function charts(stats: Stats, period: Period): { title: string; columns: Column[
   return out;
 }
 
-export function StatsApp() {
-  const { state, load, selectPeriod, reset } = useStats();
+export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
+  const { state, load, loadAccount, selectPeriod, upload, deleteAccountData, reset } =
+    useStats(loggedIn);
 
   if (state.phase === "idle") {
     return (
       <div className="flex flex-col gap-4">
+        {state.notice && (
+          <p aria-live="polite" className="rounded-lg bg-muted p-3 text-sm">
+            {state.notice}
+          </p>
+        )}
+        {state.accountEmpty && (
+          <p className="text-sm">
+            Aucun historique enregistré dans ton compte pour l&apos;instant : dépose ton export,
+            puis enregistre-le.
+          </p>
+        )}
         <ExportDrop onFiles={load} />
         {state.error && (
-          <div role="alert" className="rounded-lg border border-destructive/60 p-3 text-sm">
+          <div
+            role="alert"
+            className="flex flex-col items-start gap-2 rounded-lg border border-destructive/60 p-3 text-sm"
+          >
             <p className="font-semibold text-destructive">Lecture impossible</p>
-            <p className="mt-1">{state.error}</p>
+            <p>{state.error}</p>
+            {loggedIn && (
+              <Button size="sm" variant="outline" onClick={loadAccount}>
+                Recharger mon historique enregistré
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -64,21 +85,26 @@ export function StatsApp() {
   }
 
   if (state.phase === "loading") {
+    const fromAccount = state.source === "account";
     return (
       <section aria-labelledby="loading-title" className="flex flex-col gap-3">
         <h2 id="loading-title" className="text-lg font-semibold">
-          Lecture de l&apos;export…
+          {fromAccount ? "Chargement de ton historique…" : "Lecture de l'export…"}
         </h2>
         <progress
           className="h-2 w-full accent-primary"
-          max={state.total ?? undefined}
-          value={state.total === null ? undefined : state.done}
-          aria-label="Progression de la lecture"
+          max={state.total || undefined}
+          value={state.total ? state.done : undefined}
+          aria-label="Progression du chargement"
         />
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {state.total === null
-            ? "Décompression de l'archive…"
-            : `Fichier ${state.done} / ${state.total}`}
+            ? fromAccount
+              ? "Connexion à ton compte…"
+              : "Décompression de l'archive…"
+            : fromAccount
+              ? `${formatInt(state.done)} / ${formatInt(state.total)} écoutes`
+              : `Fichier ${state.done} / ${state.total}`}
         </p>
       </section>
     );
@@ -89,15 +115,29 @@ export function StatsApp() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
         <span>
-          {formatInt(state.plays)} lectures dans {state.historyFiles} fichier
-          {state.historyFiles > 1 ? "s" : ""}
+          {state.source === "account"
+            ? `${formatInt(state.plays)} écoutes enregistrées`
+            : `${formatInt(state.plays)} lectures dans ${state.historyFiles} fichier${state.historyFiles > 1 ? "s" : ""}`}
           {state.skippedEntries > 0 &&
             ` (${formatInt(state.skippedEntries)} entrées ignorées : livres audio ou format inconnu)`}
         </span>
-        <Button variant="outline" size="sm" onClick={reset}>
-          Changer d&apos;export
-        </Button>
+        {state.source === "file" && (
+          <Button variant="outline" size="sm" onClick={reset}>
+            Changer d&apos;export
+          </Button>
+        )}
       </div>
+
+      <AccountPanel
+        loggedIn={loggedIn}
+        source={state.source}
+        plays={state.plays}
+        upload={state.upload}
+        onUpload={upload}
+        onShowAccount={loadAccount}
+        onAddExport={reset}
+        onDelete={deleteAccountData}
+      />
 
       <div role="group" aria-label="Période" className="flex flex-wrap gap-1">
         <Button

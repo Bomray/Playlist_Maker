@@ -12,6 +12,7 @@ function play(iso: string, msPlayed: number, o: Partial<Play> = {}): Play {
     album: "Album X",
     uri: "spotify:track:a",
     skipped: false,
+    offlineTs: 0,
     ...o,
   };
 }

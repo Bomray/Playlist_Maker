@@ -41,7 +41,7 @@ entre plateformes de streaming.
 6. ✅ YouTube Music comme 2ᵉ source (`providers/youtube-music/`, API officielle, lecture seule).
 7. Stats d'écoute (choisies avant l'IA, qui demande une clé payante) :
    - ✅ 7a. Page `/stats` : import de l'export Spotify (.zip ou .json) lu **dans le navigateur**
-     (Web Worker, rien n'est envoyé), calculs dans `core/stats/` (temps total, écoutes ≥ 30 s,
+     (Web Worker ; sans connexion rien n'est envoyé), calculs dans `core/stats/` (temps total, écoutes ≥ 30 s,
      tops, années / mois / jours / heures dans le fuseau local, podcasts à part).
    - ⏭️ 7b. Enregistrement continu des nouvelles écoutes, décidé dans
      `docs/decisions/0002-enregistrement-continu-des-ecoutes.md` : **Vercel** (hébergement),
@@ -53,8 +53,12 @@ entre plateformes de streaming.
        tokens chiffrés (`TOKEN_ENCRYPTION_KEY`), cookie `pm_session` = identifiant seul
        (`providers/spotify/session.ts`, `account.ts`). Tests SQL avec PGlite ; e2e sur un
        serveur dédié (port 3100, base PGlite préremplie par `scripts/e2e-seed.mts`).
-     - ⏭️ Import de l'export vers la base, stats calculées depuis la base.
-     - Collecte toutes les heures (scope `user-read-recently-played` déjà demandé).
+     - ✅ Import de l'export vers la base : tables `tracks` / `plays` (migration 0002, clé
+       d'unicité `(user_id, ended_at, track_id, ms_played, offline_ts)` mesurée sur un vrai
+       export), `POST /api/stats/import` par lots de 5 000, `GET /api/stats/history` (flux
+       NDJSON paginé) et `DELETE` (suppression des données). Le worker télécharge l'historique
+       et calcule les stats dans le navigateur (`components/stats/account-sync.ts`).
+     - ⏭️ Collecte toutes les heures (scope `user-read-recently-played` déjà demandé).
 8. Génération de playlist par IA (corriger d'abord le score des sources sans durée,
    voir `spikes/RESULTS-2.md`).
 
