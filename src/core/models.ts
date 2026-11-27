@@ -30,6 +30,11 @@ export interface Playlist {
   name: string;
   description: string | null;
   tracks: Track[];
+  /**
+   * Titres présents dans la playlist d'origine mais illisibles (vidéo supprimée ou
+   * privée…) : signalés dans le récapitulatif plutôt que passés sous silence.
+   */
+  unavailableCount?: number;
 }
 
 export interface NewPlaylist {

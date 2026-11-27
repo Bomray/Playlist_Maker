@@ -8,6 +8,12 @@ const EnvSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ? v : undefined)),
+  // Clé développeur YouTube Data v3. Facultative : sans elle, les liens YouTube Music
+  // affichent « non configuré » et le reste de l'appli fonctionne.
+  YOUTUBE_API_KEY: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v : undefined)),
   SPOTIFY_REDIRECT_URI: z.url().default("http://127.0.0.1:3000/callback"),
   SESSION_SECRET: z
     .string()
