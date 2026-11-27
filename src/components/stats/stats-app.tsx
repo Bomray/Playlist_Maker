@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { Stats } from "@/core/stats";
 import { type Column, ColumnChart } from "./column-chart";
 import { AccountPanel } from "./account-panel";
+import { CollectPanel } from "./collect-panel";
 import { ExportDrop } from "./export-drop";
 import { formatDate, formatInt, monthLabels, WEEKDAY_LABELS, WEEKDAY_NAMES } from "./format";
 import { KpiTiles } from "./kpi-tiles";
@@ -51,9 +52,14 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
   const { state, load, loadAccount, selectPeriod, upload, deleteAccountData, reset } =
     useStats(loggedIn);
 
+  const collect = loggedIn && state.phase !== "loading" && (
+    <CollectPanel onNewPlays={loadAccount} />
+  );
+
   if (state.phase === "idle") {
     return (
       <div className="flex flex-col gap-4">
+        {collect}
         {state.notice && (
           <p aria-live="polite" className="rounded-lg bg-muted p-3 text-sm">
             {state.notice}
@@ -65,7 +71,7 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
             puis enregistre-le.
           </p>
         )}
-        <ExportDrop onFiles={load} />
+        <ExportDrop onFiles={load} loggedIn={loggedIn} />
         {state.error && (
           <div
             role="alert"
@@ -127,6 +133,8 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
           </Button>
         )}
       </div>
+
+      {collect}
 
       <AccountPanel
         loggedIn={loggedIn}
