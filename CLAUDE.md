@@ -43,7 +43,7 @@ entre plateformes de streaming.
    - ✅ 7a. Page `/stats` : import de l'export Spotify (.zip ou .json) lu **dans le navigateur**
      (Web Worker ; sans connexion rien n'est envoyé), calculs dans `core/stats/` (temps total, écoutes ≥ 30 s,
      tops, années / mois / jours / heures dans le fuseau local, podcasts à part).
-   - ⏭️ 7b. Enregistrement continu des nouvelles écoutes, décidé dans
+   - ✅ 7b. Enregistrement continu des nouvelles écoutes, décidé dans
      `docs/decisions/0002-enregistrement-continu-des-ecoutes.md` : **Vercel** (hébergement),
      **Neon** (PostgreSQL : utilisateurs, tokens chiffrés, historique importé et écoutes),
      **GitHub Actions** toutes les heures → `POST /api/cron/collect`. Quatre PR :
@@ -58,8 +58,14 @@ entre plateformes de streaming.
        export), `POST /api/stats/import` par lots de 5 000, `GET /api/stats/history` (flux
        NDJSON paginé) et `DELETE` (suppression des données). Le worker télécharge l'historique
        et calcule les stats dans le navigateur (`components/stats/account-sync.ts`).
-     - ⏭️ Collecte toutes les heures (scope `user-read-recently-played` déjà demandé).
-8. Génération de playlist par IA (corriger d'abord le score des sources sans durée,
+     - ✅ Collecte toutes les heures : `.github/workflows/collect.yml` (minute 17) →
+       `POST /api/cron/collect` (secret `CRON_SECRET`, réponse = compteurs seulement, car les
+       journaux d'un dépôt public sont visibles), `providers/spotify/collector.ts` (curseur
+       `after`, origine `api`, durée = durée du morceau). Accord par l'interrupteur de `/stats`
+       (`/api/stats/collect`, première collecte immédiate). Règle « l'export fait foi » : à la
+       lecture, les écoutes `api` sur la période couverte par l'import sont ignorées.
+8. ⏭️ À choisir : génération de playlist par IA (demande une clé payante ; corriger d'abord le
+   score des sources sans durée,
    voir `spikes/RESULTS-2.md`).
 
 Mettre cette liste à jour à chaque PR fusionnée.
