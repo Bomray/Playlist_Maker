@@ -11,6 +11,12 @@ import { getSpotifyAccessToken } from "@/providers/spotify/session";
 const BodySchema = z.object({ url: z.string().trim().min(1).max(2_000) });
 
 /**
+ * Durée maximale de la requête sur Vercel (en secondes) : une grosse playlist peut prendre
+ * plusieurs minutes (recherche titre par titre). 300 s est le maximum de l'offre gratuite.
+ */
+export const maxDuration = 300;
+
+/**
  * Le token Spotify doit rester valide pendant toute la conversion : une fois le flux
  * commencé, on ne peut plus écrire le cookie d'un token rafraîchi.
  */

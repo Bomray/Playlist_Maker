@@ -22,8 +22,8 @@ entre plateformes de streaming.
     artiste et période. Sources décidées : **import de l'export Spotify** (« Historique de
     streaming étendu », champ `ms_played`) pour le passé, puis **enregistrement continu des
     nouvelles écoutes** (`/me/player/recently-played` ne garde que les 50 dernières : il faut
-    l'interroger régulièrement et stocker). Demande un stockage et une tâche planifiée :
-    hébergement à choisir (voir `spikes/RESULTS-2.md`).
+    l'interroger régulièrement et stocker). Architecture décidée dans
+    `docs/decisions/0002-enregistrement-continu-des-ecoutes.md`.
 
 ### Avancement de la V1 (Deezer → Spotify)
 
