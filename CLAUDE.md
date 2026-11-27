@@ -20,9 +20,10 @@ entre plateformes de streaming.
 1. ✅ App initialisée, CI, connexion Spotify PKCE (cookie chiffré).
 2. ✅ Provider Deezer (lecture seule, limiteur de débit).
 3. ✅ Provider Spotify (recherche, création, lecture de ses propres playlists).
-4. ⏭️ `core/matching` + `core/convert.ts` : normalisation des titres, score de confiance
-   (ISRC d'abord, sinon titre / artiste / durée ±3 s), trouvés / incertains / introuvables.
-5. Interface de conversion (lien → progression → récap → correction → création), liens
+4. ✅ `core/matching` + `core/convert.ts` : normalisation, score de confiance (ISRC, sinon
+   titre 0,5 / artiste 0,3 / durée 0,2 ; trouvé ≥ 0,85, incertain ≥ 0,5), rapport de conversion,
+   correction manuelle. Les incertains ne sont pas ajoutés sans validation.
+5. ⏭️ Interface de conversion (lien → progression → récap → correction → création), liens
    courts Deezer (`link.deezer.com/s/…`), puis suppression de la page temporaire `/dev/spotify`.
 
 Mettre cette liste à jour à chaque PR fusionnée.
