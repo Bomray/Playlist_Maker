@@ -15,6 +15,19 @@ entre plateformes de streaming.
   statistiques d'écoute multi-plateformes, filtres personnalisés sauvegardables.
   Ne rien construire pour ces fonctionnalités tant que la V1 n'est pas terminée.
 
+### Avancement de la V1 (Deezer → Spotify)
+
+1. ✅ App initialisée, CI, connexion Spotify PKCE (cookie chiffré).
+2. ✅ Provider Deezer (lecture seule, limiteur de débit).
+3. ✅ Provider Spotify (recherche, création, lecture de ses propres playlists).
+4. ✅ `core/matching` + `core/convert.ts` : normalisation, score de confiance (ISRC, sinon
+   titre 0,5 / artiste 0,3 / durée 0,2 ; trouvé ≥ 0,85, incertain ≥ 0,5), rapport de conversion,
+   correction manuelle. Les incertains ne sont pas ajoutés sans validation.
+5. ⏭️ Interface de conversion (lien → progression → récap → correction → création), liens
+   courts Deezer (`link.deezer.com/s/…`), puis suppression de la page temporaire `/dev/spotify`.
+
+Mettre cette liste à jour à chaque PR fusionnée.
+
 Développeur : étudiant en BUT Informatique. Explique brièvement les choix
 non évidents (dans la PR ou en commentaire), sans cours magistral.
 
