@@ -207,6 +207,14 @@ describe("getPlaylist", () => {
     });
   });
 
+  it("playlist éditoriale Spotify (404) → not_found avec une explication", async () => {
+    const body = '{"error":{"status":404,"message":"Resource not found"}}';
+    const { provider } = setup(new Response(body, { status: 404 }));
+    const err = await provider.getPlaylist(ref).catch((e: unknown) => e);
+    expect(err).toMatchObject({ kind: "not_found", status: 404, detail: body });
+    expect((err as Error).message).toContain("éditoriales");
+  });
+
   it("refuse de suivre un lien `next` hors de l'API Spotify", async () => {
     const { provider } = setup(meta(), json({ items: [], next: "https://evil.example/x" }));
     await expect(provider.getPlaylist(ref)).rejects.toMatchObject({ kind: "invalid_response" });

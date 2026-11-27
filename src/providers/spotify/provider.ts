@@ -105,7 +105,24 @@ export function createSpotifyProvider(deps: SpotifyApiDeps): MusicProvider {
       if (ref.provider !== "spotify") {
         throw new Error(`Référence ${ref.provider} passée au provider Spotify`);
       }
-      const meta = await api.get(`/playlists/${ref.id}`, PlaylistResponseSchema);
+      const meta = await api.get(`/playlists/${ref.id}`, PlaylistResponseSchema).catch((e) => {
+        // Depuis fin 2024, les playlists créées par Spotify (éditoriales, Daily Mix…)
+        // répondent 404 aux nouvelles applications : on le précise à l'utilisateur.
+        if (e instanceof ProviderError && e.kind === "not_found") {
+          throw new ProviderError(
+            {
+              kind: "not_found",
+              provider: "spotify",
+              status: e.status,
+              message:
+                "Playlist introuvable. Les playlists créées par Spotify (éditoriales, Daily Mix…) ne sont pas accessibles depuis cette application.",
+              detail: e.detail,
+            },
+            { cause: e },
+          );
+        }
+        throw e;
+      });
 
       const tracks: Track[] = [];
       let next: string | null = `/playlists/${ref.id}/items?limit=${ITEMS_PAGE}`;

@@ -35,7 +35,7 @@ const WITHOUT_ISRC: Track = {
   providerTrackId: "1068757022",
 };
 
-// Playlist éditoriale Spotify (« Today's Top Hits ») : ne doit PAS être lisible en Dev Mode.
+// Playlist éditoriale Spotify (« Today's Top Hits ») : Spotify répond 404 aux nouvelles apps.
 const FOREIGN_PLAYLIST = "37i9dQZF1DXcBWIGoYBM5M";
 
 function pretty(value: unknown): string {
@@ -57,17 +57,17 @@ async function step<T>(
   request: string,
   run: () => Promise<T>,
   describe: (value: T) => unknown,
-  expectedError?: ProviderErrorKind,
+  expectedErrors: ProviderErrorKind[] = [],
 ): Promise<T | null> {
   try {
     const value = await run();
-    const unexpected = expectedError !== undefined;
+    const unexpected = expectedErrors.length > 0;
     results.push({
       label,
       request,
       ok: !unexpected,
       output: unexpected
-        ? `Erreur « ${expectedError} » attendue, mais l'appel a réussi :\n${pretty(describe(value))}`
+        ? `Erreur « ${expectedErrors.join(" » ou « ")} » attendue, mais l'appel a réussi :\n${pretty(describe(value))}`
         : pretty(describe(value)),
       httpStatus: null,
       errorKind: null,
@@ -75,7 +75,7 @@ async function step<T>(
     return value;
   } catch (e) {
     if (!(e instanceof ProviderError)) throw e;
-    const expected = e.kind === expectedError;
+    const expected = expectedErrors.includes(e.kind);
     results.push({
       label,
       request,
@@ -139,10 +139,10 @@ export async function runSpotifyProviderCheck(spotify: MusicProvider): Promise<S
   await step(
     results,
     "getPlaylist sur une playlist éditoriale (refus attendu)",
-    `GET /v1/playlists/${FOREIGN_PLAYLIST}/items`,
+    `GET /v1/playlists/${FOREIGN_PLAYLIST}`,
     () => spotify.getPlaylist({ provider: "spotify", id: FOREIGN_PLAYLIST }),
     (p) => ({ name: p.name, nombre: p.tracks.length }),
-    "not_accessible",
+    ["not_found", "not_accessible"],
   );
   return results;
 }
