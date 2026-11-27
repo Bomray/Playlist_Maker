@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { ConversionApp } from "@/components/conversion/conversion-app";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -10,8 +11,11 @@ export default function Home({ searchParams }: PageProps<"/">) {
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl font-semibold tracking-tight">Playlist Maker</h1>
         <p className="text-muted-foreground">
-          Convertis une playlist Deezer en playlist Spotify, à partir de son lien.
+          Convertis une playlist Deezer ou YouTube Music en playlist Spotify, à partir de son lien.
         </p>
+        <Link href="/stats" className="text-sm underline underline-offset-2">
+          Voir mes stats d&apos;écoute →
+        </Link>
       </header>
       {/* Lecture des cookies et de l'URL au moment de la requête : derrière un Suspense. */}
       <Suspense fallback={<p className="text-sm text-muted-foreground">Chargement…</p>}>
