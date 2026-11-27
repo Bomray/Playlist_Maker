@@ -23,8 +23,11 @@ entre plateformes de streaming.
 4. ✅ `core/matching` + `core/convert.ts` : normalisation, score de confiance (ISRC, sinon
    titre 0,5 / artiste 0,3 / durée 0,2 ; trouvé ≥ 0,85, incertain ≥ 0,5), rapport de conversion,
    correction manuelle. Les incertains ne sont pas ajoutés sans validation.
-5. ⏭️ Interface de conversion (lien → progression → récap → correction → création), liens
-   courts Deezer (`link.deezer.com/s/…`), puis suppression de la page temporaire `/dev/spotify`.
+5. Conversion de bout en bout, en deux PR :
+   - ✅ 5a. Serveur : liens courts Deezer (`expandUrl`), `POST /api/convert` (progression en flux
+     NDJSON, voir `lib/conversion-stream.ts`), Server Actions de recherche manuelle et de création.
+   - ⏭️ 5b. Interface (lien → progression → récap → correction → création), puis suppression
+     de la page temporaire `/dev/spotify` et retour sur l'accueil après connexion Spotify.
 
 Mettre cette liste à jour à chaque PR fusionnée.
 

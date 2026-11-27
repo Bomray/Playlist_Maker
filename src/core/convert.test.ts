@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import type { MusicProvider } from "@/providers/types";
-import { buildNewPlaylist, findSourceProvider, matchPlaylist, selectCandidate } from "./convert";
+import {
+  buildNewPlaylist,
+  findSourceProvider,
+  matchPlaylist,
+  resolveSource,
+  selectCandidate,
+} from "./convert";
 import { ProviderError } from "./errors";
 import type { Playlist, ProviderId, Track } from "./models";
 
@@ -146,6 +152,18 @@ describe("matchPlaylist", () => {
     await expect(matchPlaylist({ playlist, destination: dest })).rejects.toThrow("bug");
   });
 
+  it("s'arrête avant le titre suivant quand la conversion est annulée", async () => {
+    const controller = new AbortController();
+    const dest = fakeProvider("spotify", async () => {
+      controller.abort(new Error("annulée"));
+      return [];
+    });
+    await expect(
+      matchPlaylist({ playlist, destination: dest, signal: controller.signal }),
+    ).rejects.toThrow("annulée");
+    expect(dest.searchTrack).toHaveBeenCalledTimes(1);
+  });
+
   it("playlist vide : rapport vide", async () => {
     const report = await matchPlaylist({ playlist: { ...playlist, tracks: [] }, destination });
     expect(report.summary.total).toBe(0);
@@ -196,5 +214,33 @@ describe("buildNewPlaylist", () => {
   it("exclut les incertains non validés", async () => {
     const report = await matchPlaylist({ playlist, destination });
     expect(buildNewPlaylist(report, { name: "x", description: null }).trackIds).toEqual(["s1"]);
+  });
+});
+
+describe("resolveSource", () => {
+  const deezer: MusicProvider = {
+    ...fakeProvider("deezer"),
+    expandUrl: vi.fn(async (url: string) =>
+      url.startsWith("https://short.test/") ? "https://deezer.test/playlist/42" : null,
+    ),
+  };
+  const spotify = fakeProvider("spotify");
+
+  it("lien direct : pas d'appel à expandUrl", async () => {
+    const { ref } = await resolveSource("https://spotify.test/playlist/abc", [deezer, spotify]);
+    expect(ref).toEqual({ provider: "spotify", id: "abc" });
+    expect(deezer.expandUrl).not.toHaveBeenCalled();
+  });
+
+  it("développe un lien court puis reconnaît la playlist", async () => {
+    const { provider, ref } = await resolveSource("https://short.test/x", [spotify, deezer]);
+    expect(provider.id).toBe("deezer");
+    expect(ref).toEqual({ provider: "deezer", id: "42" });
+  });
+
+  it("lien inconnu : erreur « unsupported »", async () => {
+    await expect(resolveSource("https://exemple.fr", [deezer, spotify])).rejects.toMatchObject({
+      kind: "unsupported",
+    });
   });
 });

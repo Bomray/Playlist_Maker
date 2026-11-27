@@ -66,8 +66,13 @@ export async function readSpotifySession(): Promise<SpotifyTokens | null> {
 /**
  * Renvoie un access token valide, en le rafraîchissant si besoin.
  * Écrit un cookie : à appeler uniquement dans une Server Action ou un Route Handler.
+ *
+ * `minValidityMs` : rafraîchit aussi si le token expire avant ce délai. Sert avant une
+ * réponse en flux, où plus aucun cookie ne peut être écrit une fois l'envoi commencé.
  */
-export async function getSpotifyAccessToken(): Promise<string> {
+export async function getSpotifyAccessToken(
+  minValidityMs: number = REFRESH_MARGIN_MS,
+): Promise<string> {
   const tokens = await readSpotifySession();
   if (!tokens) {
     throw new ProviderError({
@@ -76,7 +81,7 @@ export async function getSpotifyAccessToken(): Promise<string> {
       message: "Pas connecté à Spotify",
     });
   }
-  if (tokens.expiresAt - Date.now() > REFRESH_MARGIN_MS) return tokens.accessToken;
+  if (tokens.expiresAt - Date.now() > minValidityMs) return tokens.accessToken;
 
   const refreshed = await refreshTokens(spotifyAuthConfig(), tokens.refreshToken);
   await saveSpotifyTokens(refreshed);

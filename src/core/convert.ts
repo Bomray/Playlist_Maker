@@ -1,5 +1,5 @@
 // Orchestration d'une conversion de playlist d'une plateforme vers une autre :
-// 1. trouver le provider source à partir du lien (`findSourceProvider`) ;
+// 1. trouver le provider source à partir du lien (`resolveSource`) ;
 // 2. chercher chaque titre sur la destination et le noter (`matchPlaylist`) ;
 // 3. laisser l'utilisateur corriger (`selectCandidate`) ;
 // 4. préparer la playlist à créer (`buildNewPlaylist`), créée ensuite par
@@ -58,6 +58,24 @@ export function findSourceProvider(
   });
 }
 
+/**
+ * Comme `findSourceProvider`, mais développe d'abord un éventuel lien court
+ * (ex. `link.deezer.com/s/…`) via `expandUrl`, ce qui demande un appel réseau.
+ */
+export async function resolveSource(
+  url: string,
+  providers: readonly MusicProvider[],
+): Promise<{ provider: MusicProvider; ref: PlaylistRef }> {
+  const direct = providers.some((p) => p.parsePlaylistUrl(url.trim()) !== null);
+  if (!direct) {
+    for (const provider of providers) {
+      const expanded = await provider.expandUrl?.(url);
+      if (expanded) return findSourceProvider(expanded, providers);
+    }
+  }
+  return findSourceProvider(url, providers);
+}
+
 export function summarize(results: readonly TrackMatch[]): ConversionSummary {
   const summary: ConversionSummary = {
     total: results.length,
@@ -82,6 +100,8 @@ export interface MatchPlaylistOptions {
   destination: MusicProvider;
   /** Appelé après chaque titre traité, pour afficher la progression. */
   onProgress?: (done: number, total: number) => void;
+  /** Annulation (ex. l'utilisateur a quitté la page) : arrête avant le titre suivant. */
+  signal?: AbortSignal;
 }
 
 /**
@@ -93,12 +113,15 @@ export async function matchPlaylist({
   playlist,
   destination,
   onProgress,
+  signal,
 }: MatchPlaylistOptions): Promise<ConversionReport> {
   const results: TrackMatch[] = [];
   const total = playlist.tracks.length;
   onProgress?.(0, total);
 
   for (const track of playlist.tracks) {
+    // Lève l'erreur d'annulation (`signal.reason`) : inutile de consommer le quota.
+    signal?.throwIfAborted();
     results.push(await matchOne(track, destination));
     onProgress?.(results.length, total);
   }
