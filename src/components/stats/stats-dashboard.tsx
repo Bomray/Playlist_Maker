@@ -60,7 +60,7 @@ export function StatsDashboard({ stats, period }: { stats: Stats | null; period:
       </div>
       <EvolutionCard stats={stats} period={period} />
       <div className="grid gap-6 lg:grid-cols-2">
-        <TopList stats={stats} />
+        <TopList stats={stats} showAll />
         <Moments stats={stats} />
       </div>
     </div>

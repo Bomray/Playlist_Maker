@@ -218,3 +218,28 @@ test("pages de détail : artiste, puis titre, puis retour", async ({ page }) => 
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("region", { name: "Tes n°1 de la période" })).toBeVisible();
 });
+
+test("tous les tops : onglets, recherche, tri", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+    name: "my_spotify_data.zip",
+    mimeType: "application/zip",
+    buffer: exportZip(),
+  });
+  await page.getByRole("link", { name: "Tous les tops" }).click({ timeout: 60_000 });
+  await expect(page).toHaveURL(/\?tops=titres/);
+  const tops = page.getByRole("region", { name: /Tous les tops/ });
+  await expect(tops).toContainText("2 titres");
+  await expect(tops.getByRole("listitem").first()).toContainText("Titre A");
+
+  await tops.getByRole("searchbox").fill("titre b");
+  await expect(tops).toContainText("1 titre trouvé");
+  await expect(tops.getByRole("listitem")).toHaveCount(1);
+  await expect(tops.getByRole("listitem").first()).toContainText("Titre B");
+
+  await tops.getByRole("tab", { name: "Artistes" }).click();
+  await expect(page).toHaveURL(/\?tops=artistes/);
+  await tops.getByRole("searchbox").fill("");
+  await expect(tops.getByRole("listitem").first()).toContainText("Artiste test");
+  await expect(tops.getByRole("listitem").first()).toContainText("5 écoutes");
+});

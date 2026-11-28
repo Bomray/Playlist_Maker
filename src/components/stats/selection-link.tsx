@@ -21,11 +21,6 @@ export function useSelection(): Selection | null {
 
 export const selectionHref = (s: Selection) => `/?${selectionToParams(s).toString()}`;
 
-export function openSelection(s: Selection): void {
-  window.history.pushState(null, "", selectionHref(s));
-  window.scrollTo({ top: 0 });
-}
-
 export function closeSelection(): void {
   window.history.pushState(null, "", "/");
 }
@@ -43,17 +38,22 @@ export function entrySelection(kind: ImageKind, e: TopEntry): Selection {
   };
 }
 
+/** Navigation sans rechargement vers une autre vue de « / » (détail, tops complets). */
+export function navigate(href: string): void {
+  window.history.pushState(null, "", href);
+  window.scrollTo({ top: 0 });
+}
+
 /**
- * Lien vers une page de détail : vrai lien (ouvrable dans un nouvel onglet), mais navigation
- * sans rechargement au clic simple.
+ * Vrai lien (ouvrable dans un nouvel onglet), mais navigation sans rechargement au clic simple.
  */
-export function SelectionLink({
-  selection,
+export function PushLink({
+  href,
   className,
   children,
   label,
 }: {
-  selection: Selection;
+  href: string;
   className?: string;
   children: ReactNode;
   label?: string;
@@ -61,11 +61,39 @@ export function SelectionLink({
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
-    openSelection(selection);
+    navigate(href);
   };
   return (
-    <a href={selectionHref(selection)} onClick={onClick} className={className} aria-label={label}>
+    <a href={href} onClick={onClick} className={className} aria-label={label}>
       {children}
     </a>
   );
 }
+
+/** Lien vers la page d'un artiste, d'un album ou d'un titre. */
+export function SelectionLink({
+  selection,
+  ...rest
+}: {
+  selection: Selection;
+  className?: string;
+  children: ReactNode;
+  label?: string;
+}) {
+  return <PushLink href={selectionHref(selection)} {...rest} />;
+}
+
+// Tops complets : « /?tops=titres » (ou artistes, albums).
+export const TOPS_TABS = [
+  { value: "titres", kind: "topTracks", label: "Titres" },
+  { value: "artistes", kind: "topArtists", label: "Artistes" },
+  { value: "albums", kind: "topAlbums", label: "Albums" },
+] as const;
+export type TopsTab = (typeof TOPS_TABS)[number]["value"];
+
+export function useTopsTab(): TopsTab | null {
+  const value = useSearchParams().get("tops");
+  return TOPS_TABS.find((t) => t.value === value)?.value ?? null;
+}
+
+export const topsHref = (tab: TopsTab) => `/?tops=${tab}`;

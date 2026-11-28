@@ -1,12 +1,28 @@
 // Web Worker : lit l'export (ou télécharge l'historique enregistré) et calcule les stats hors
 // du fil principal, pour que la page reste fluide (~300 000 lectures pour un gros historique).
 // Les lectures restent en mémoire ici : changer de période ne relit rien.
-import { computeStats, type Play } from "@/core/stats";
+import { computeStats, type Play, rankAndSearch, type Stats } from "@/core/stats";
 import { downloadHistory, SyncError, uploadPlays } from "./account-sync";
 import { ExportReadError, readExport } from "./read-export";
 import type { DataSource, WorkerRequest, WorkerResponse } from "./worker-protocol";
 
 let plays: Play[] = [];
+// Tops complets de la dernière période demandée : faire défiler ou chercher ne recalcule rien.
+let fullTops: { key: string; stats: Stats } | null = null;
+
+function tops(msg: Extract<WorkerRequest, { type: "tops" }>): WorkerResponse {
+  const key = JSON.stringify([msg.from, msg.to, msg.timeZone]);
+  if (fullTops?.key !== key) {
+    fullTops = { key, stats: computeStats(plays, { ...msg, topLimit: Infinity }) };
+  }
+  const found = rankAndSearch(fullTops.stats[msg.kind], msg.metric, msg.query);
+  return {
+    type: "tops",
+    requestId: msg.requestId,
+    entries: found.slice(msg.offset, msg.offset + msg.limit),
+    total: found.length,
+  };
+}
 
 function reply(message: WorkerResponse): void {
   postMessage(message);
@@ -25,11 +41,13 @@ async function loadFiles(files: File[]): Promise<void> {
   );
   const result = readExport(inputs, (done, total) => reply({ type: "progress", done, total }));
   plays = result.plays;
+  fullTops = null;
   loaded("file", result.historyFiles, result.skippedEntries);
 }
 
 async function loadAccount(): Promise<void> {
   plays = await downloadHistory((done, total) => reply({ type: "progress", done, total }));
+  fullTops = null;
   if (plays.length === 0) reply({ type: "accountEmpty" });
   else loaded("account", 0, 0);
 }
@@ -65,6 +83,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     if (msg.type === "load") await loadFiles(msg.files);
     else if (msg.type === "loadAccount") await loadAccount();
     else if (msg.type === "upload") await upload();
+    else if (msg.type === "tops") reply(tops(msg));
     else reply({ type: "stats", target: msg.target, stats: computeStats(plays, msg) });
   } catch (e) {
     reply(errorMessage(e, during));

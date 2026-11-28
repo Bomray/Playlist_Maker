@@ -8,14 +8,25 @@ import { ExportDrop } from "./export-drop";
 import { formatInt } from "./format";
 import { DetailView } from "./detail-view";
 import { ImagesProvider } from "./images";
-import { useSelection } from "./selection-link";
+import { useSelection, useTopsTab } from "./selection-link";
+import { TopsView } from "./tops-view";
 import { PeriodPicker } from "./period-picker";
 import { StatsDashboard } from "./stats-dashboard";
 import { useStats } from "./use-stats";
 
 export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
-  const { state, load, loadAccount, selectPeriod, showDetail, upload, deleteAccountData, reset } =
-    useStats(loggedIn);
+  const {
+    state,
+    load,
+    loadAccount,
+    selectPeriod,
+    showDetail,
+    requestTops,
+    upload,
+    deleteAccountData,
+    reset,
+  } = useStats(loggedIn);
+  const topsTab = useTopsTab();
   // Page de détail ouverte d'après l'adresse (?artiste=…, ?album=…, ?titre=…).
   const selection = useSelection();
   const ready = state.phase === "ready";
@@ -108,7 +119,15 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
       {collect}
       <PeriodPicker period={period} years={years} onChange={selectPeriod} />
       <ImagesProvider stats={stats} enabled={loggedIn}>
-        {state.detail ? (
+        {topsTab ? (
+          <TopsView
+            tab={topsTab}
+            period={period}
+            loggedIn={loggedIn}
+            version={stats}
+            requestTops={requestTops}
+          />
+        ) : state.detail ? (
           <DetailView
             selection={state.detail.selection}
             stats={state.detail.stats}

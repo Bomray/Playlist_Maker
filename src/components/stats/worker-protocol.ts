@@ -1,5 +1,5 @@
 // Messages échangés entre la page de stats et son Web Worker.
-import type { Selection, Stats } from "@/core/stats";
+import type { RankedEntry, Selection, Stats, TopMetric } from "@/core/stats";
 
 /** « main » : stats de la page ; « detail » : page d'un artiste, d'un album ou d'un titre. */
 export type StatsTarget = "main" | "detail";
@@ -20,7 +20,22 @@ export type WorkerRequest =
       to?: number;
       timeZone: string;
       selection?: Selection;
+    }
+  /** Une page des tops complets, filtrée par la recherche. */
+  | {
+      type: "tops";
+      requestId: number;
+      kind: TopKind;
+      metric: TopMetric;
+      query: string;
+      offset: number;
+      limit: number;
+      from?: number;
+      to?: number;
+      timeZone: string;
     };
+
+export type TopKind = "topTracks" | "topArtists" | "topAlbums";
 
 export type WorkerResponse =
   | { type: "progress"; done: number; total: number }
@@ -37,4 +52,5 @@ export type WorkerResponse =
   | { type: "uploadProgress"; sent: number; total: number; inserted: number }
   | { type: "uploaded"; received: number; inserted: number }
   | { type: "stats"; target: StatsTarget; stats: Stats }
+  | { type: "tops"; requestId: number; entries: RankedEntry[]; total: number }
   | { type: "error"; message: string; during: "load" | "upload"; unauthorized: boolean };

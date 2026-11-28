@@ -2,8 +2,23 @@
 // Pilote le Web Worker de stats : export déposé ou historique enregistré, calcul par période,
 // enregistrement dans le compte et suppression.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { type Period, periodBounds, type Selection, type Stats } from "@/core/stats";
-import type { DataSource, WorkerRequest, WorkerResponse } from "./worker-protocol";
+import {
+  type Period,
+  periodBounds,
+  type Selection,
+  type Stats,
+  type TopMetric,
+} from "@/core/stats";
+import type { DataSource, TopKind, WorkerRequest, WorkerResponse } from "./worker-protocol";
+
+export interface TopsQuery {
+  kind: TopKind;
+  metric: TopMetric;
+  query: string;
+  offset: number;
+  limit: number;
+}
+export type TopsPage = Extract<WorkerResponse, { type: "tops" }>;
 
 export type UploadState =
   | { status: "idle" }
@@ -53,6 +68,9 @@ export function useStats(loggedIn: boolean) {
   const send = (msg: WorkerRequest) => workerRef.current?.postMessage(msg);
   const periodRef = useRef<Period>({ kind: "all" });
   const selectionRef = useRef<Selection | null>(null);
+  // Pages de tops demandées au worker, en attente de réponse.
+  const pendingTops = useRef(new Map<number, (page: TopsPage) => void>());
+  const nextRequest = useRef(1);
 
   /** Demande les stats de la page (et du détail ouvert) pour la période courante. */
   const computeAll = useCallback(() => {
@@ -94,6 +112,10 @@ export function useStats(loggedIn: boolean) {
             if (msg.target === "main") return { ...s, stats: msg.stats };
             return s.detail ? { ...s, detail: { ...s.detail, stats: msg.stats } } : s;
           });
+          break;
+        case "tops":
+          pendingTops.current.get(msg.requestId)?.(msg);
+          pendingTops.current.delete(msg.requestId);
           break;
         case "uploadProgress":
           setState((s) =>
@@ -190,6 +212,23 @@ export function useStats(loggedIn: boolean) {
     }
   }, []);
 
+  /** Une page des tops complets de la période courante. */
+  const requestTops = useCallback(
+    (q: TopsQuery) =>
+      new Promise<TopsPage>((resolve) => {
+        const requestId = nextRequest.current++;
+        pendingTops.current.set(requestId, resolve);
+        send({
+          type: "tops",
+          requestId,
+          timeZone: timeZone.current,
+          ...periodBounds(periodRef.current),
+          ...q,
+        });
+      }),
+    [],
+  );
+
   const upload = useCallback(() => {
     setState((s) =>
       s.phase === "ready" ? { ...s, upload: { status: "sending", sent: 0, total: s.plays } } : s,
@@ -224,6 +263,7 @@ export function useStats(loggedIn: boolean) {
     loadAccount,
     selectPeriod,
     showDetail,
+    requestTops,
     upload,
     deleteAccountData,
     reset,

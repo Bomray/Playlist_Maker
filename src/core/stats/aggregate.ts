@@ -57,6 +57,8 @@ export interface StatsOptions {
   timeZone: string;
   /** Seulement les écoutes d'un artiste, d'un album ou d'un titre (pages de détail). */
   selection?: Selection;
+  /** Taille des tops (par écoutes et par temps) ; `Infinity` pour tout garder (tops complets). */
+  topLimit?: number;
 }
 
 interface LocalParts {
@@ -131,13 +133,14 @@ function addTop(
  * Union des 50 premiers par écoutes et des 50 premiers par temps d'écoute (≤ 100 entrées),
  * triée par écoutes : l'affichage peut ainsi trier par l'un ou l'autre sans en oublier.
  */
-function top(map: Map<string, TopEntry>): TopEntry[] {
+function top(map: Map<string, TopEntry>, limit: number): TopEntry[] {
   const all = [...map.values()];
   const byPlays = [...all].sort(
     (a, b) => b.plays - a.plays || b.msPlayed - a.msPlayed || a.label.localeCompare(b.label),
   );
   const byTime = [...all].sort((a, b) => b.msPlayed - a.msPlayed || b.plays - a.plays);
-  const keep = new Set([...byPlays.slice(0, TOP_LIMIT), ...byTime.slice(0, TOP_LIMIT)]);
+  if (limit >= all.length) return byPlays;
+  const keep = new Set([...byPlays.slice(0, limit), ...byTime.slice(0, limit)]);
   return byPlays.filter((e) => keep.has(e));
 }
 
@@ -154,7 +157,7 @@ function fixedBuckets(map: Map<string, Bucket>, size: number): Bucket[] {
 
 export function computeStats(
   plays: readonly Play[],
-  { from, to, timeZone, selection }: StatsOptions,
+  { from, to, timeZone, selection, topLimit = TOP_LIMIT }: StatsOptions,
 ): Stats {
   const local = localPartsCache(timeZone);
   const tracks = new Map<string, TopEntry>();
@@ -218,9 +221,9 @@ export function computeStats(
     music: stats,
     podcasts,
     range: first === Infinity ? null : { first, last },
-    topTracks: top(tracks),
-    topArtists: top(artists),
-    topAlbums: top(albums),
+    topTracks: top(tracks, topLimit),
+    topArtists: top(artists, topLimit),
+    topAlbums: top(albums, topLimit),
     byYear: sortedBuckets(years),
     byMonth: sortedBuckets(months),
     byDay: sortedBuckets(dayBuckets),

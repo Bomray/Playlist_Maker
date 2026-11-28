@@ -34,3 +34,4 @@ export {
   selectionToParams,
   type Selection,
 } from "./selection";
+export { normalizeSearch, rankAndSearch, type RankedEntry, type TopMetric } from "./search";

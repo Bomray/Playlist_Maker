@@ -90,7 +90,9 @@ installable en PWA) de stats d'écoute Spotify et de conversion de playlists ent
        `?titre=&de=&uri=`, `core/stats/selection.ts`) avec `history.pushState` pour garder les
        écoutes en mémoire ; le worker calcule une 2ᵉ série de stats filtrée (`target: "detail"`).
        Rang, courbe et calendrier, titres / albums, moments ; même période que la page.
-     - 5. Tops complets : recherche, onglets titres / artistes / albums, chargement au défilement.
+     - ✅ 5. Tops complets (`/?tops=titres|artistes|albums`, `tops-view.tsx`) : classement complet
+       gardé dans le worker (`topLimit: Infinity`), pages de 50 au défilement, recherche sans
+       accents (`core/stats/search.ts`), tri écoutes / temps ; lien « Tous les tops ».
      - 6. Conversion au nouveau style (pochettes qui se retournent quand un titre est trouvé).
    - Stats v2 (dans les PR ci-dessus) : **sélecteur de période global** (aujourd'hui, hier,
      7 jours, mois, 6 mois, année, année précise, tout, plage libre) ; tops complets ; pages

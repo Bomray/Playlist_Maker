@@ -1,7 +1,15 @@
 "use client";
 // Pochettes et photos d'artistes des entrées affichées, lues dans le cache en base (comptes
 // connectés). En attendant (ou sans image connue), un dégradé propre à chaque nom.
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "cn";
 import type { Stats, TopEntry } from "@/core/stats";
 import type { ImageMap } from "@/lib/db/images";
@@ -17,56 +25,79 @@ function splitKey(key: string): [string, string] {
   return i < 0 ? ["", key] : [key.slice(0, i), key.slice(i + 1)];
 }
 
+/** Entrées dont on veut les images : tops d'une page, ou page de tops complets déjà chargée. */
+export type ImageSources = Pick<Stats, "topTracks" | "topArtists" | "topAlbums">;
+
+/** Limite de la route par liste et par requête. */
+const CHUNK = 300;
+
+async function fetchImages(body: {
+  tracks: { key: string; artist: string; title: string }[];
+  artists: string[];
+  albums: { key: string; artist: string; album: string }[];
+}): Promise<ImageMap | null> {
+  const res = await fetch("/api/stats/images", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return res.ok ? ((await res.json()) as ImageMap) : null;
+}
+
 export function ImagesProvider({
   stats,
   enabled,
   children,
 }: {
-  /** Stats dont on veut les images (page, ou page de détail : les fournisseurs s'imbriquent). */
-  stats: Stats | null;
+  /** Les fournisseurs s'imbriquent : une page de détail ajoute ses images à celles de la page. */
+  stats: ImageSources | null;
   enabled: boolean;
   children: ReactNode;
 }) {
   const images = useContext(ImagesContext);
   const [own, setImages] = useState<ImageMap>(EMPTY);
+  // Entrées déjà demandées : changer de période ou charger la suite ne redemande que les nouvelles.
+  const requested = useRef(new Set<string>());
 
   useEffect(() => {
     if (!enabled || !stats) return;
-    const controller = new AbortController();
-    const body = {
-      tracks: stats.topTracks.map((t) => ({
-        key: t.key,
-        artist: t.sublabel ?? "",
-        title: t.label,
-      })),
-      artists: stats.topArtists.map((a) => a.label),
-      albums: stats.topAlbums.map((a) => {
-        const [artist, album] = splitKey(a.key);
-        return { key: a.key, artist, album };
-      }),
-    };
-    fetch("/api/stats/images", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    })
-      .then((res) => (res.ok ? (res.json() as Promise<ImageMap>) : null))
-      .then((map) => {
-        // On garde les images déjà connues : changer de période ne fait pas clignoter.
-        if (map)
+    const fresh = <T,>(list: T[], id: (x: T) => string) =>
+      list.filter((x) => {
+        const k = id(x);
+        if (requested.current.has(k)) return false;
+        requested.current.add(k);
+        return true;
+      });
+    const tracks = fresh(stats.topTracks, (t) => `t:${t.key}`).map((t) => ({
+      key: t.key,
+      artist: t.sublabel ?? "",
+      title: t.label,
+    }));
+    const artists = fresh(stats.topArtists, (a) => `a:${a.label}`).map((a) => a.label);
+    const albums = fresh(stats.topAlbums, (a) => `l:${a.key}`).map((a) => {
+      const [artist, album] = splitKey(a.key);
+      return { key: a.key, artist, album };
+    });
+
+    const rounds = Math.ceil(Math.max(tracks.length, artists.length, albums.length) / CHUNK);
+    for (let i = 0; i < rounds; i++) {
+      const part = <T,>(list: T[]) => list.slice(i * CHUNK, (i + 1) * CHUNK);
+      fetchImages({
+        tracks: part(tracks),
+        artists: part(artists),
+        albums: part(albums),
+      })
+        .then((map) => {
+          if (!map) return;
           setImages((prev) => ({
             tracks: { ...prev.tracks, ...map.tracks },
             artists: { ...prev.artists, ...map.artists },
             albums: { ...prev.albums, ...map.albums },
           }));
-      })
-      .catch((e: unknown) => {
+        })
         // Images facultatives : un échec laisse simplement les dégradés.
-        if (!(e instanceof DOMException && e.name === "AbortError"))
-          console.warn("Images indisponibles", e);
-      });
-    return () => controller.abort();
+        .catch((e: unknown) => console.warn("Images indisponibles", e));
+    }
   }, [stats, enabled]);
 
   // Imbricable : la page de détail ajoute ses images à celles de la page.
