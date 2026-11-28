@@ -55,7 +55,6 @@ test("export .zip → chiffres clés, tops et filtre par année", async ({ page 
   const tiles = page.getByRole("region", { name: "Chiffres clés" });
   // Délai long : sur un serveur qui démarre, le worker est compilé à sa première utilisation.
   await expect(tiles).toContainText("300minutes d'écoute", { timeout: 60_000 });
-  await expect(tiles).toContainText("5heures");
   await expect(tiles).toContainText("5écoutes");
   await expect(tiles).toContainText("Podcasts");
   await expect(page.getByRole("list").filter({ hasText: "Titre A" }).first()).toContainText(
@@ -65,6 +64,43 @@ test("export .zip → chiffres clés, tops et filtre par année", async ({ page 
   await page.getByRole("button", { name: "2025" }).click();
   await expect(tiles).toContainText("1écoutes");
   await expect(page.getByRole("button", { name: "2025" })).toHaveAttribute("aria-pressed", "true");
+  await expect(tiles).toContainText("Temps d'écoute en 2025");
+  await expect(page.getByRole("region", { name: "Tes n°1 de la période" })).toContainText(
+    "Titre B",
+  );
+});
+
+test("minutes par défaut, bascule en heures mémorisée", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+    name: "my_spotify_data.zip",
+    mimeType: "application/zip",
+    buffer: exportZip(),
+  });
+  const tiles = page.getByRole("region", { name: "Chiffres clés" });
+  await expect(tiles).toContainText("300minutes d'écoute", { timeout: 60_000 });
+
+  await tiles.getByRole("button", { name: "Heures" }).click();
+  await expect(tiles).toContainText("5heures d'écoute");
+  // La préférence s'applique partout, y compris dans les tops.
+  await page.getByRole("button", { name: "Temps", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Tops" })).toContainText("3 h");
+  expect(await page.evaluate(() => localStorage.getItem("wavl-duration-unit"))).toBe("hours");
+});
+
+test("évolution : courbe puis calendrier jour par jour", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+    name: "my_spotify_data.zip",
+    mimeType: "application/zip",
+    buffer: exportZip(),
+  });
+  const evolution = page.getByRole("region", { name: "Évolution" });
+  await expect(evolution.getByRole("img", { name: /Courbe du temps d'écoute/ })).toBeVisible({
+    timeout: 60_000,
+  });
+  await evolution.getByRole("button", { name: "Calendrier" }).click();
+  await expect(evolution).toContainText(/5 jours d'écoute sur/);
 });
 
 test("fichier sans historique : message clair", async ({ page }) => {

@@ -1,37 +1,57 @@
-import { splitDuration, type Stats } from "@/core/stats";
-import { formatDecimal, formatHours, formatInt } from "./format";
+"use client";
+// Carte principale : temps d'écoute de la période (minutes par défaut, ou heures) et chiffres clés.
+import { type Period, periodLabel, type Stats } from "@/core/stats";
+import { durationValue, formatDuration, unitLabel } from "./duration";
+import { formatInt } from "./format";
+import { DurationToggle, useDurationUnit } from "./use-duration-unit";
 
 function Tile({ value, label }: { value: string; label: string }) {
   return (
-    <li className="flex flex-col rounded-lg bg-muted p-3">
-      <span className="text-2xl font-semibold tabular-nums">{value}</span>
-      <span className="text-sm text-muted-foreground">{label}</span>
+    <li className="flex flex-col rounded-2xl bg-background/50 px-3 py-2">
+      <span className="font-heading text-xl font-semibold tabular-nums">{value}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </li>
   );
 }
 
-/** Chiffres clés de la période : temps d'écoute (minutes, heures, jours) et écoutes. */
-export function KpiTiles({ stats }: { stats: Stats }) {
+export function KpiTiles({ stats, period }: { stats: Stats; period: Period }) {
+  const [unit] = useDurationUnit();
   const { music, podcasts } = stats;
-  const d = splitDuration(music.msPlayed);
   return (
-    <section aria-label="Chiffres clés" className="flex flex-col gap-3">
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Tile value={formatInt(d.minutes)} label="minutes d'écoute" />
-        <Tile value={formatInt(d.hours)} label="heures" />
-        <Tile value={formatDecimal(d.days)} label="jours" />
-        <Tile value={formatInt(music.plays)} label="écoutes" />
-      </ul>
-      <p className="text-sm text-muted-foreground">
-        {formatInt(music.distinctTracks)} titres et {formatInt(music.distinctArtists)} artistes
-        différents, sur {formatInt(music.activeDays)} jours d&apos;écoute.{" "}
-        {formatInt(music.shortPlays)} lectures de moins de 30&nbsp;s (titres passés) comptent dans
-        le temps mais pas dans les écoutes.
+    <section
+      aria-label="Chiffres clés"
+      className="glass flex flex-col gap-4 rounded-3xl p-4 sm:p-6"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Temps d&apos;écoute {periodLabel(period)}
+        </h2>
+        <DurationToggle />
+      </div>
+      <p className="flex flex-wrap items-baseline gap-x-2">
+        <span className="font-heading text-5xl font-bold tracking-tight tabular-nums sm:text-6xl">
+          {durationValue(music.msPlayed, unit)}
+        </span>
+        <span className="text-lg text-muted-foreground">
+          {unitLabel(music.msPlayed, unit)} d&apos;écoute
+        </span>
       </p>
-      {podcasts.msPlayed > 0 && (
-        <p className="rounded-lg border p-3 text-sm">
-          <span className="font-medium">Podcasts</span> (comptés à part) :{" "}
-          {formatHours(podcasts.msPlayed)}, {formatInt(podcasts.episodes)} épisodes.
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Tile value={formatInt(music.plays)} label="écoutes" />
+        <Tile value={formatInt(music.distinctTracks)} label="titres différents" />
+        <Tile value={formatInt(music.distinctArtists)} label="artistes" />
+        <Tile value={formatInt(music.activeDays)} label="jours d'écoute" />
+      </ul>
+      {(music.shortPlays > 0 || podcasts.msPlayed > 0) && (
+        <p className="text-xs text-muted-foreground">
+          {music.shortPlays > 0 &&
+            `${formatInt(music.shortPlays)} lectures de moins de 30 s (titres passés) comptent dans le temps mais pas dans les écoutes. `}
+          {podcasts.msPlayed > 0 && (
+            <>
+              <span className="font-medium text-foreground">Podcasts</span> (comptés à part) :{" "}
+              {formatDuration(podcasts.msPlayed, unit)}, {formatInt(podcasts.episodes)} épisodes.
+            </>
+          )}
         </p>
       )}
     </section>

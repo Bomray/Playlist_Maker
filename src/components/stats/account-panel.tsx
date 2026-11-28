@@ -23,7 +23,7 @@ export function AccountPanel(props: Props) {
 
   if (!loggedIn) {
     return (
-      <div className="flex flex-col items-start gap-2 rounded-lg border p-3 text-sm">
+      <div className="flex flex-col items-start gap-2 glass rounded-3xl p-4 text-sm">
         <p>
           Ces stats sont calculées sur ton appareil et ne sont pas enregistrées. Connecte-toi pour
           les garder dans ton compte et les retrouver sur tous tes appareils.
@@ -39,7 +39,7 @@ export function AccountPanel(props: Props) {
   if (source === "account") return <SavedHistory {...props} />;
 
   return (
-    <div className="flex flex-col items-start gap-2 rounded-lg border p-3 text-sm">
+    <div className="flex flex-col items-start gap-2 glass rounded-3xl p-4 text-sm">
       {upload.status === "idle" && (
         <>
           <p>
@@ -98,7 +98,7 @@ function SavedHistory({ plays, onAddExport, onDelete }: Props) {
   const [deleting, setDeleting] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border p-3 text-sm">
+    <div className="flex flex-col gap-2 glass rounded-3xl p-4 text-sm">
       <p>
         Historique enregistré dans ton compte : <strong>{formatInt(plays)} écoutes</strong>.
       </p>

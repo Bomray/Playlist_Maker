@@ -199,7 +199,22 @@
   animation: logo-bottom 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+/* Courbe d'évolution : elle se dessine de gauche à droite à l'affichage. */
+@keyframes curve-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.curve-reveal {
+  animation: curve-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .curve-reveal,
   .aurora-blob,
   .logo-top,
   .logo-bottom {

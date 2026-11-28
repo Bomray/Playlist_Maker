@@ -1,9 +1,10 @@
 "use client";
 // Interrupteur « Enregistrer automatiquement mes nouvelles écoutes » (accord explicite) et
 // état de la dernière collecte.
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import type { CollectStatus } from "@/lib/db/collect";
 import { formatInt } from "./format";
+import { NextCollection } from "./next-collection";
 
 type Load =
   | { status: "loading" }
@@ -60,6 +61,17 @@ export function CollectPanel({ onNewPlays }: { onNewPlays: () => void }) {
     }
   }
 
+  const apiPlaysNow = state.status === "ready" ? state.data.apiPlays : null;
+  // Relevé attendu : on relit l'état, et on recharge les stats s'il a apporté des écoutes.
+  const poll = useCallback(() => {
+    request()
+      .then((data) => {
+        setState({ status: "ready", data });
+        if (apiPlaysNow !== null && data.apiPlays > apiPlaysNow) onNewPlays();
+      })
+      .catch((e: Error) => console.warn("État de la collecte indisponible", e.message));
+  }, [apiPlaysNow, onNewPlays]);
+
   if (state.status === "loading") return null;
   if (state.status === "error") {
     return (
@@ -73,7 +85,7 @@ export function CollectPanel({ onNewPlays }: { onNewPlays: () => void }) {
   return (
     <section
       aria-label="Enregistrement automatique"
-      className="flex flex-col gap-2 rounded-lg border p-3 text-sm"
+      className="glass flex flex-col gap-2 rounded-3xl p-4 text-sm"
     >
       <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-3">
         <span className="font-medium">Enregistrer automatiquement mes nouvelles écoutes</span>
@@ -95,6 +107,7 @@ export function CollectPanel({ onNewPlays }: { onNewPlays: () => void }) {
             ? "Activé : tes écoutes sont relevées toutes les heures."
             : "Désactivé. Une fois activé, l'appli relève tes écoutes Spotify toutes les heures, même quand elle est fermée."}
       </p>
+      {collecting && !saving && <NextCollection lastCollectedAt={lastCollectedAt} onPoll={poll} />}
       {lastError && collecting && <p className="text-destructive">{lastError}</p>}
       {(apiPlays > 0 || lastCollectedAt) && (
         <p className="text-xs text-muted-foreground">
