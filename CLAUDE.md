@@ -86,7 +86,10 @@ installable en PWA) de stats d'écoute Spotify et de conversion de playlists ent
        `POST /api/cron/images` (2ᵉ étape de `collect.yml`, 4 min max, token d'application,
        ~6 req/s, arrêt sur 429, les plus écoutés d'abord), lecture par `POST /api/stats/images`
        (connecté), affichage `components/stats/images.tsx` (fondu sur le dégradé).
-     - 4. Pages artiste, album et titre : courbe d'évolution et calendrier jour par jour.
+     - ✅ 4. Pages artiste, album et titre : restent sur `/` (`?artiste=`, `?album=&de=`,
+       `?titre=&de=&uri=`, `core/stats/selection.ts`) avec `history.pushState` pour garder les
+       écoutes en mémoire ; le worker calcule une 2ᵉ série de stats filtrée (`target: "detail"`).
+       Rang, courbe et calendrier, titres / albums, moments ; même période que la page.
      - 5. Tops complets : recherche, onglets titres / artistes / albums, chargement au défilement.
      - 6. Conversion au nouveau style (pochettes qui se retournent quand un titre est trouvé).
    - Stats v2 (dans les PR ci-dessus) : **sélecteur de période global** (aujourd'hui, hier,

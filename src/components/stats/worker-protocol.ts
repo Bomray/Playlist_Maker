@@ -1,5 +1,8 @@
 // Messages échangés entre la page de stats et son Web Worker.
-import type { Stats } from "@/core/stats";
+import type { Selection, Stats } from "@/core/stats";
+
+/** « main » : stats de la page ; « detail » : page d'un artiste, d'un album ou d'un titre. */
+export type StatsTarget = "main" | "detail";
 
 export type DataSource = "file" | "account";
 
@@ -10,7 +13,14 @@ export type WorkerRequest =
   | { type: "loadAccount" }
   /** Enregistrer dans le compte les écoutes actuellement chargées (export déposé). */
   | { type: "upload" }
-  | { type: "compute"; from?: number; to?: number; timeZone: string };
+  | {
+      type: "compute";
+      target: StatsTarget;
+      from?: number;
+      to?: number;
+      timeZone: string;
+      selection?: Selection;
+    };
 
 export type WorkerResponse =
   | { type: "progress"; done: number; total: number }
@@ -26,5 +36,5 @@ export type WorkerResponse =
   | { type: "accountEmpty" }
   | { type: "uploadProgress"; sent: number; total: number; inserted: number }
   | { type: "uploaded"; received: number; inserted: number }
-  | { type: "stats"; stats: Stats }
+  | { type: "stats"; target: StatsTarget; stats: Stats }
   | { type: "error"; message: string; during: "load" | "upload"; unauthorized: boolean };

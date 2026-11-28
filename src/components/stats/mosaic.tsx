@@ -6,6 +6,7 @@ import type { Stats, TopEntry } from "@/core/stats";
 import { formatDuration } from "./duration";
 import { formatInt } from "./format";
 import { Artwork, gradientFor, type ImageKind, useImage } from "./images";
+import { entrySelection, SelectionLink } from "./selection-link";
 import { useDurationUnit } from "./use-duration-unit";
 
 function initials(name: string): string {
@@ -71,6 +72,14 @@ function Tile({ entry, kind, caption, large, className }: TileProps) {
         {formatDuration(entry.msPlayed, unit)} · {formatInt(entry.plays)} écoute
         {entry.plays > 1 ? "s" : ""}
       </span>
+      {/* Toute la case mène à la page de l'artiste, du titre ou de l'album. */}
+      <SelectionLink
+        selection={entrySelection(kind, entry)}
+        label={`${caption} : ${entry.label}`}
+        className="absolute inset-0 z-10 rounded-3xl focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none"
+      >
+        <span className="sr-only">Voir le détail</span>
+      </SelectionLink>
     </li>
   );
 }

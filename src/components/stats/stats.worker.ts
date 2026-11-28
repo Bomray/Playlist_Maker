@@ -65,7 +65,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     if (msg.type === "load") await loadFiles(msg.files);
     else if (msg.type === "loadAccount") await loadAccount();
     else if (msg.type === "upload") await upload();
-    else reply({ type: "stats", stats: computeStats(plays, msg) });
+    else reply({ type: "stats", target: msg.target, stats: computeStats(plays, msg) });
   } catch (e) {
     reply(errorMessage(e, during));
   }

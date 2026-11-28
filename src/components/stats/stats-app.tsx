@@ -1,18 +1,27 @@
 "use client";
+import { useEffect } from "react";
 // Écran des stats : dépôt de l'export → lecture (progression) → stats par période.
 import { Button } from "@/components/ui/button";
 import { AccountPanel } from "./account-panel";
 import { CollectPanel } from "./collect-panel";
 import { ExportDrop } from "./export-drop";
 import { formatInt } from "./format";
+import { DetailView } from "./detail-view";
 import { ImagesProvider } from "./images";
+import { useSelection } from "./selection-link";
 import { PeriodPicker } from "./period-picker";
 import { StatsDashboard } from "./stats-dashboard";
 import { useStats } from "./use-stats";
 
 export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
-  const { state, load, loadAccount, selectPeriod, upload, deleteAccountData, reset } =
+  const { state, load, loadAccount, selectPeriod, showDetail, upload, deleteAccountData, reset } =
     useStats(loggedIn);
+  // Page de détail ouverte d'après l'adresse (?artiste=…, ?album=…, ?titre=…).
+  const selection = useSelection();
+  const ready = state.phase === "ready";
+  useEffect(() => {
+    if (ready) showDetail(selection);
+  }, [ready, selection, showDetail]);
 
   const collect = loggedIn && state.phase !== "loading" && (
     <CollectPanel onNewPlays={loadAccount} />
@@ -99,7 +108,17 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
       {collect}
       <PeriodPicker period={period} years={years} onChange={selectPeriod} />
       <ImagesProvider stats={stats} enabled={loggedIn}>
-        <StatsDashboard stats={stats} period={period} />
+        {state.detail ? (
+          <DetailView
+            selection={state.detail.selection}
+            stats={state.detail.stats}
+            main={stats}
+            period={period}
+            loggedIn={loggedIn}
+          />
+        ) : (
+          <StatsDashboard stats={stats} period={period} />
+        )}
       </ImagesProvider>
 
       <AccountPanel

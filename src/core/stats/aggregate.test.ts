@@ -142,4 +142,10 @@ describe("tops : union écoutes / temps", () => {
     expect(s.topTracks.some((t) => t.label === "Mix de 2 h")).toBe(true);
     expect(s.topTracks.at(-1)!.label).toBe("Mix de 2 h"); // trié par écoutes : en dernier
   });
+
+  it("se limite à la sélection (page artiste)", () => {
+    const s = computeStats(plays, { ...paris, selection: { kind: "artist", artist: "Artiste 1" } });
+    expect(s.topArtists.map((a) => a.label)).toEqual(["Artiste 1"]);
+    expect(s.podcasts.msPlayed).toBe(0);
+  });
 });

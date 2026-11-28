@@ -6,9 +6,10 @@ import { type Stats, TOP_LIMIT, type TopEntry } from "@/core/stats";
 import { type DurationUnit, formatDuration } from "./duration";
 import { formatInt } from "./format";
 import { Artwork, gradientFor, type ImageKind, useImage } from "./images";
+import { entrySelection, SelectionLink } from "./selection-link";
 import { useDurationUnit } from "./use-duration-unit";
 
-type Kind = "topTracks" | "topArtists" | "topAlbums";
+export type Kind = "topTracks" | "topArtists" | "topAlbums";
 type Metric = "plays" | "msPlayed";
 
 const KINDS: { kind: Kind; label: string }[] = [
@@ -43,8 +44,17 @@ const display = (e: TopEntry, metric: Metric, unit: DurationUnit) =>
   metric === "plays" ? `${formatInt(e.plays)} écoutes` : formatDuration(e.msPlayed, unit);
 
 /** Tops titres / artistes / albums, classés par écoutes ou par temps d'écoute. */
-export function TopList({ stats }: { stats: Stats }) {
-  const [kind, setKind] = useState<Kind>("topTracks");
+export function TopList({
+  stats,
+  kinds = ["topTracks", "topArtists", "topAlbums"],
+  title = "Tops",
+}: {
+  stats: Stats;
+  /** Classements proposés (une page d'album n'a que ses titres). */
+  kinds?: Kind[];
+  title?: string;
+}) {
+  const [kind, setKind] = useState<Kind>(kinds[0] ?? "topTracks");
   const [metric, setMetric] = useState<Metric>("plays");
   const [expanded, setExpanded] = useState(false);
   const [unit] = useDurationUnit();
@@ -61,22 +71,24 @@ export function TopList({ stats }: { stats: Stats }) {
       className="glass flex flex-col gap-3 rounded-3xl p-4 sm:p-6"
     >
       <h2 id="top-title" className="text-lg font-semibold">
-        Tops
+        {title}
       </h2>
       <div className="flex flex-wrap gap-2">
-        <div role="group" aria-label="Classement" className="flex gap-1">
-          {KINDS.map((k) => (
-            <Button
-              key={k.kind}
-              size="sm"
-              variant={kind === k.kind ? "default" : "outline"}
-              aria-pressed={kind === k.kind}
-              onClick={() => setKind(k.kind)}
-            >
-              {k.label}
-            </Button>
-          ))}
-        </div>
+        {kinds.length > 1 && (
+          <div role="group" aria-label="Classement" className="flex gap-1">
+            {KINDS.filter((k) => kinds.includes(k.kind)).map((k) => (
+              <Button
+                key={k.kind}
+                size="sm"
+                variant={kind === k.kind ? "default" : "outline"}
+                aria-pressed={kind === k.kind}
+                onClick={() => setKind(k.kind)}
+              >
+                {k.label}
+              </Button>
+            ))}
+          </div>
+        )}
         <div role="group" aria-label="Trier par" className="flex gap-1">
           <Button
             size="sm"
@@ -110,7 +122,12 @@ export function TopList({ stats }: { stats: Stats }) {
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex items-baseline justify-between gap-3 text-sm">
                   <span className="min-w-0 break-words">
-                    <span className="font-medium">{e.label}</span>
+                    <SelectionLink
+                      selection={entrySelection(IMAGE_KIND[kind], e)}
+                      className="font-medium underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
+                    >
+                      {e.label}
+                    </SelectionLink>
                     {e.sublabel && <span className="text-muted-foreground"> — {e.sublabel}</span>}
                   </span>
                   <span className="shrink-0 text-muted-foreground tabular-nums">

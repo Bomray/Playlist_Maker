@@ -186,3 +186,35 @@ test.describe.serial("connecté", () => {
     );
   });
 });
+
+test("pages de détail : artiste, puis titre, puis retour", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+    name: "my_spotify_data.zip",
+    mimeType: "application/zip",
+    buffer: exportZip(),
+  });
+  const mosaic = page.getByRole("region", { name: "Tes n°1 de la période" });
+  await mosaic.getByRole("link", { name: "Artiste n°1 : Artiste test" }).click({ timeout: 60_000 });
+  await expect(page).toHaveURL(/\?artiste=Artiste\+test/);
+  const header = page.getByRole("region", { name: "Chiffres clés" });
+  await expect(header.getByRole("heading", { name: "Artiste test" })).toBeVisible();
+  await expect(header).toContainText("n°1 de tes artistes");
+  await expect(header).toContainText("5écoutes");
+
+  await page
+    .getByRole("region", { name: "Ses titres et albums" })
+    .getByRole("link", { name: "Titre A" })
+    .click();
+  await expect(page).toHaveURL(/titre=Titre\+A/);
+  await expect(header.getByRole("heading", { name: "Titre A" })).toBeVisible();
+  await expect(header).toContainText("3écoutes");
+
+  // La période s'applique aussi aux pages de détail.
+  await page.getByRole("button", { name: "2025" }).click();
+  await expect(page.getByText("Aucune écoute en 2025")).toBeVisible();
+
+  await page.getByRole("button", { name: "Toutes mes stats" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("region", { name: "Tes n°1 de la période" })).toBeVisible();
+});

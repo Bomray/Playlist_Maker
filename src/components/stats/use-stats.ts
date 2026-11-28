@@ -2,7 +2,7 @@
 // Pilote le Web Worker de stats : export déposé ou historique enregistré, calcul par période,
 // enregistrement dans le compte et suppression.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { type Period, periodBounds, type Stats } from "@/core/stats";
+import { type Period, periodBounds, type Selection, type Stats } from "@/core/stats";
 import type { DataSource, WorkerRequest, WorkerResponse } from "./worker-protocol";
 
 export type UploadState =
@@ -30,6 +30,8 @@ export type StatsState =
       years: number[];
       period: Period;
       stats: Stats | null;
+      /** Page de détail ouverte (artiste, album, titre) et ses stats sur la même période. */
+      detail: { selection: Selection; stats: Stats | null } | null;
       upload: UploadState;
     };
 
@@ -48,59 +50,78 @@ export function useStats(loggedIn: boolean) {
   const workerRef = useRef<Worker | null>(null);
   const timeZone = useRef(Intl.DateTimeFormat().resolvedOptions().timeZone);
   // Période gardée d'un chargement à l'autre (ex. rechargement après un relevé automatique).
-  const periodRef = useRef<Period>({ kind: "all" });
-
   const send = (msg: WorkerRequest) => workerRef.current?.postMessage(msg);
+  const periodRef = useRef<Period>({ kind: "all" });
+  const selectionRef = useRef<Selection | null>(null);
 
-  const onMessage = useCallback((msg: WorkerResponse) => {
-    switch (msg.type) {
-      case "progress":
-        setState((s) => (s.phase === "loading" ? { ...s, done: msg.done, total: msg.total } : s));
-        break;
-      case "loaded": {
-        const { type, ...rest } = msg;
-        void type;
-        setState({
-          phase: "ready",
-          ...rest,
-          period: periodRef.current,
-          stats: null,
-          upload: { status: "idle" },
-        });
-        send({ type: "compute", timeZone: timeZone.current, ...periodBounds(periodRef.current) });
-        break;
-      }
-      case "accountEmpty":
-        setState({ ...IDLE, accountEmpty: true });
-        break;
-      case "stats":
-        setState((s) => (s.phase === "ready" ? { ...s, stats: msg.stats } : s));
-        break;
-      case "uploadProgress":
-        setState((s) =>
-          s.phase === "ready"
-            ? { ...s, upload: { status: "sending", sent: msg.sent, total: msg.total } }
-            : s,
-        );
-        break;
-      case "uploaded":
-        setState((s) =>
-          s.phase === "ready"
-            ? { ...s, upload: { status: "done", received: msg.received, inserted: msg.inserted } }
-            : s,
-        );
-        break;
-      case "error":
-        if (msg.during === "upload") {
-          setState((s) =>
-            s.phase === "ready" ? { ...s, upload: { status: "error", message: msg.message } } : s,
-          );
-        } else {
-          setState({ ...IDLE, error: msg.message });
-        }
-        break;
-    }
+  /** Demande les stats de la page (et du détail ouvert) pour la période courante. */
+  const computeAll = useCallback(() => {
+    const base = {
+      type: "compute",
+      timeZone: timeZone.current,
+      ...periodBounds(periodRef.current),
+    } as const;
+    send({ ...base, target: "main" });
+    if (selectionRef.current) send({ ...base, target: "detail", selection: selectionRef.current });
   }, []);
+
+  const onMessage = useCallback(
+    (msg: WorkerResponse) => {
+      switch (msg.type) {
+        case "progress":
+          setState((s) => (s.phase === "loading" ? { ...s, done: msg.done, total: msg.total } : s));
+          break;
+        case "loaded": {
+          const { type, ...rest } = msg;
+          void type;
+          setState({
+            phase: "ready",
+            ...rest,
+            period: periodRef.current,
+            stats: null,
+            detail: selectionRef.current ? { selection: selectionRef.current, stats: null } : null,
+            upload: { status: "idle" },
+          });
+          computeAll();
+          break;
+        }
+        case "accountEmpty":
+          setState({ ...IDLE, accountEmpty: true });
+          break;
+        case "stats":
+          setState((s) => {
+            if (s.phase !== "ready") return s;
+            if (msg.target === "main") return { ...s, stats: msg.stats };
+            return s.detail ? { ...s, detail: { ...s.detail, stats: msg.stats } } : s;
+          });
+          break;
+        case "uploadProgress":
+          setState((s) =>
+            s.phase === "ready"
+              ? { ...s, upload: { status: "sending", sent: msg.sent, total: msg.total } }
+              : s,
+          );
+          break;
+        case "uploaded":
+          setState((s) =>
+            s.phase === "ready"
+              ? { ...s, upload: { status: "done", received: msg.received, inserted: msg.inserted } }
+              : s,
+          );
+          break;
+        case "error":
+          if (msg.during === "upload") {
+            setState((s) =>
+              s.phase === "ready" ? { ...s, upload: { status: "error", message: msg.message } } : s,
+            );
+          } else {
+            setState({ ...IDLE, error: msg.message });
+          }
+          break;
+      }
+    },
+    [computeAll],
+  );
 
   /** Démarre un worker vide et lui envoie une première demande (sans toucher à l'état). */
   const spawn = useCallback(
@@ -139,10 +160,34 @@ export function useStats(loggedIn: boolean) {
     return () => workerRef.current?.terminate();
   }, [loggedIn, spawn]);
 
-  const selectPeriod = useCallback((period: Period) => {
-    periodRef.current = period;
-    setState((s) => (s.phase === "ready" ? { ...s, period } : s));
-    send({ type: "compute", timeZone: timeZone.current, ...periodBounds(period) });
+  const selectPeriod = useCallback(
+    (period: Period) => {
+      periodRef.current = period;
+      setState((s) =>
+        s.phase === "ready"
+          ? { ...s, period, detail: s.detail && { ...s.detail, stats: null } }
+          : s,
+      );
+      computeAll();
+    },
+    [computeAll],
+  );
+
+  /** Ouvre (ou ferme, avec `null`) la page d'un artiste, d'un album ou d'un titre. */
+  const showDetail = useCallback((selection: Selection | null) => {
+    selectionRef.current = selection;
+    setState((s) =>
+      s.phase === "ready" ? { ...s, detail: selection && { selection, stats: null } } : s,
+    );
+    if (selection) {
+      send({
+        type: "compute",
+        target: "detail",
+        timeZone: timeZone.current,
+        selection,
+        ...periodBounds(periodRef.current),
+      });
+    }
   }, []);
 
   const upload = useCallback(() => {
@@ -173,5 +218,14 @@ export function useStats(loggedIn: boolean) {
     setState(IDLE);
   }, []);
 
-  return { state, load, loadAccount, selectPeriod, upload, deleteAccountData, reset };
+  return {
+    state,
+    load,
+    loadAccount,
+    selectPeriod,
+    showDetail,
+    upload,
+    deleteAccountData,
+    reset,
+  };
 }

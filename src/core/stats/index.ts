@@ -27,3 +27,10 @@ export {
   type Period,
 } from "./period";
 export { COLLECT_MINUTE, formatCountdown, nextCollection } from "./schedule";
+export {
+  matchesSelection,
+  selectionFromParams,
+  selectionKey,
+  selectionToParams,
+  type Selection,
+} from "./selection";

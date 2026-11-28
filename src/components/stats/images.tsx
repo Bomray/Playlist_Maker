@@ -1,7 +1,7 @@
 "use client";
 // Pochettes et photos d'artistes des entrées affichées, lues dans le cache en base (comptes
 // connectés). En attendant (ou sans image connue), un dégradé propre à chaque nom.
-import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { cn } from "cn";
 import type { Stats, TopEntry } from "@/core/stats";
 import type { ImageMap } from "@/lib/db/images";
@@ -22,11 +22,13 @@ export function ImagesProvider({
   enabled,
   children,
 }: {
+  /** Stats dont on veut les images (page, ou page de détail : les fournisseurs s'imbriquent). */
   stats: Stats | null;
   enabled: boolean;
   children: ReactNode;
 }) {
-  const [images, setImages] = useState<ImageMap>(EMPTY);
+  const images = useContext(ImagesContext);
+  const [own, setImages] = useState<ImageMap>(EMPTY);
 
   useEffect(() => {
     if (!enabled || !stats) return;
@@ -67,7 +69,16 @@ export function ImagesProvider({
     return () => controller.abort();
   }, [stats, enabled]);
 
-  return <ImagesContext.Provider value={images}>{children}</ImagesContext.Provider>;
+  // Imbricable : la page de détail ajoute ses images à celles de la page.
+  const value = useMemo(
+    () => ({
+      tracks: { ...images.tracks, ...own.tracks },
+      artists: { ...images.artists, ...own.artists },
+      albums: { ...images.albums, ...own.albums },
+    }),
+    [images, own],
+  );
+  return <ImagesContext.Provider value={value}>{children}</ImagesContext.Provider>;
 }
 
 export function useImage(kind: ImageKind, entry: TopEntry): string | null {

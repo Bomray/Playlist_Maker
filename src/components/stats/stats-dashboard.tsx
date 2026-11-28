@@ -61,18 +61,25 @@ export function StatsDashboard({ stats, period }: { stats: Stats | null; period:
       <EvolutionCard stats={stats} period={period} />
       <div className="grid gap-6 lg:grid-cols-2">
         <TopList stats={stats} />
-        <section
-          aria-labelledby="moments-title"
-          className="glass flex flex-col gap-6 rounded-3xl p-4 sm:p-6"
-        >
-          <h2 id="moments-title" className="text-lg font-semibold">
-            Quand tu écoutes
-          </h2>
-          {moments(stats).map((c) => (
-            <ColumnChart key={c.title} title={c.title} columns={c.columns} />
-          ))}
-        </section>
+        <Moments stats={stats} />
       </div>
     </div>
+  );
+}
+
+/** « Quand tu écoutes » : répartition par jour de la semaine et par heure. */
+export function Moments({ stats }: { stats: Stats }) {
+  return (
+    <section
+      aria-labelledby="moments-title"
+      className="glass flex flex-col gap-6 rounded-3xl p-4 sm:p-6"
+    >
+      <h2 id="moments-title" className="text-lg font-semibold">
+        Quand tu écoutes
+      </h2>
+      {moments(stats).map((c) => (
+        <ColumnChart key={c.title} title={c.title} columns={c.columns} />
+      ))}
+    </section>
   );
 }

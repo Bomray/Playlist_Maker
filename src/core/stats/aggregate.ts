@@ -1,5 +1,6 @@
 // Calcul des statistiques d'écoute à partir des lectures (logique pure, sans navigateur).
 import type { Play } from "./parse";
+import { matchesSelection, type Selection } from "./selection";
 
 /** Comme Spotify, une lecture ne compte comme « écoute » qu'à partir de 30 secondes. */
 export const MIN_PLAY_MS = 30_000;
@@ -54,6 +55,8 @@ export interface StatsOptions {
   to?: number;
   /** Fuseau IANA pour les heures et les jours (ex. « Europe/Paris »). */
   timeZone: string;
+  /** Seulement les écoutes d'un artiste, d'un album ou d'un titre (pages de détail). */
+  selection?: Selection;
 }
 
 interface LocalParts {
@@ -149,7 +152,10 @@ function fixedBuckets(map: Map<string, Bucket>, size: number): Bucket[] {
   );
 }
 
-export function computeStats(plays: readonly Play[], { from, to, timeZone }: StatsOptions): Stats {
+export function computeStats(
+  plays: readonly Play[],
+  { from, to, timeZone, selection }: StatsOptions,
+): Stats {
   const local = localPartsCache(timeZone);
   const tracks = new Map<string, TopEntry>();
   const artists = new Map<string, TopEntry>();
@@ -174,6 +180,7 @@ export function computeStats(plays: readonly Play[], { from, to, timeZone }: Sta
 
   for (const p of plays) {
     if ((from !== undefined && p.endedAt < from) || (to !== undefined && p.endedAt > to)) continue;
+    if (selection && !matchesSelection(p, selection)) continue;
     first = Math.min(first, p.endedAt);
     last = Math.max(last, p.endedAt);
     const counted = p.msPlayed >= MIN_PLAY_MS;
