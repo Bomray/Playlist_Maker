@@ -1,0 +1,83 @@
+{
+  "ranAt": "2026-11-27T20:59:46.510Z",
+  "checks": [
+    {
+      "name": "search track (pochette incluse dans album.images)",
+      "status": 200,
+      "ok": true,
+      "note": "100 titres trouvés"
+    },
+    {
+      "name": "GET /tracks/{id}",
+      "status": 200,
+      "ok": true,
+      "note": "album.images: 640/300/64 px, artists[].id présent"
+    },
+    {
+      "name": "GET /tracks?ids= (groupé)",
+      "status": 403,
+      "ok": false,
+      "note": "{\"error\":{\"status\":403,\"message\":\"Forbidden\"}}"
+    },
+    {
+      "name": "GET /artists/{id}",
+      "status": 200,
+      "ok": true,
+      "note": "images: 1000/640/200/64 px"
+    },
+    {
+      "name": "GET /artists?ids= (groupé)",
+      "status": 403,
+      "ok": false,
+      "note": "{\"error\":{\"status\":403,\"message\":\"Forbidden\"}}"
+    },
+    {
+      "name": "GET /albums/{id}",
+      "status": 200,
+      "ok": true,
+      "note": "images: 3"
+    },
+    {
+      "name": "GET /albums?ids= (groupé)",
+      "status": 403,
+      "ok": false,
+      "note": "{\"error\":{\"status\":403,\"message\":\"Forbidden\"}}"
+    },
+    {
+      "name": "search type=artist (photo par nom)",
+      "status": 200,
+      "ok": true,
+      "note": "Nekfeu : 4 images"
+    },
+    {
+      "name": "oEmbed track",
+      "status": 200,
+      "ok": true,
+      "note": "thumbnail 300 px"
+    },
+    {
+      "name": "oEmbed artist",
+      "status": 200,
+      "ok": true,
+      "note": "thumbnail 64 px"
+    },
+    {
+      "name": "débit GET /tracks/{id}",
+      "status": 200,
+      "ok": true,
+      "note": "100 requêtes sans 429 en 13013 ms (8/s)"
+    },
+    {
+      "name": "débit GET /artists/{id}",
+      "status": 200,
+      "ok": true,
+      "note": "40 requêtes sans 429 en 4880 ms (8/s)"
+    },
+    {
+      "name": "débit oEmbed track",
+      "status": 200,
+      "ok": true,
+      "note": "100 requêtes sans 429 en 29131 ms (3/s)"
+    }
+  ]
+}
