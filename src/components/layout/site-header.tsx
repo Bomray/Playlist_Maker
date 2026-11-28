@@ -9,7 +9,7 @@ import { ThemeToggle } from "./theme-toggle";
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 px-4 pt-4 sm:px-6">
-      <div className="glass mx-auto flex max-w-6xl items-center gap-3 rounded-full py-2 pr-2 pl-4">
+      <div className="header-glass mx-auto flex max-w-6xl items-center gap-3 rounded-full py-2 pr-2 pl-4">
         <Link
           href="/"
           aria-label="Wavl, accueil"

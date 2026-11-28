@@ -38,7 +38,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navigation principale"
-      className="glass fixed inset-x-4 bottom-4 z-40 flex items-center gap-1 rounded-full p-1.5 shadow-lg md:hidden"
+      className="header-glass fixed inset-x-4 bottom-4 z-40 flex items-center gap-1 rounded-full p-1.5 md:hidden"
     >
       {NAV_ITEMS.map((item) => {
         const active = isActive(item.href, pathname);

@@ -50,13 +50,13 @@ export function Logo({ className, animated = false, title }: LogoProps) {
     >
       <defs>
         <linearGradient id={light} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f1e2fc" />
-          <stop offset=".6" stopColor="#c7a3ea" />
-          <stop offset="1" stopColor="#a27ad4" />
+          <stop offset="0" stopColor="#fdf7ff" />
+          <stop offset=".6" stopColor="#e2c9f7" />
+          <stop offset="1" stopColor="#c4a0ee" />
         </linearGradient>
         <linearGradient id={deep} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#8d66c2" />
-          <stop offset="1" stopColor="#3f2668" />
+          <stop offset="0" stopColor="#b08ae4" />
+          <stop offset="1" stopColor="#6c48ad" />
         </linearGradient>
         <clipPath id={`${id}-top`}>
           <path d={TOP_HALF} />

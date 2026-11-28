@@ -75,6 +75,7 @@
   --chart-5: #3f2668;
   --glass: rgb(255 255 255 / 0.62);
   --glass-border: rgb(23 18 31 / 0.08);
+  --header-bg: rgb(255 255 255 / 0.86);
   --aurora-1: #d7b8f0;
   --aurora-2: #b9cdf2;
   --aurora-opacity: 0.55;
@@ -109,6 +110,7 @@
   --chart-5: #3f2668;
   --glass: rgb(255 255 255 / 0.06);
   --glass-border: rgb(255 255 255 / 0.12);
+  --header-bg: rgb(16 12 27 / 0.86);
   --aurora-1: #7b4fae;
   --aurora-2: #2f5a7a;
   --aurora-opacity: 0.5;
@@ -136,12 +138,21 @@
 }
 
 @layer components {
-  /* Verre dépoli : panneaux posés sur l'aurore. */
+  /* Verre dépoli : panneaux posés sur l'aurore. Pas de « -webkit-backdrop-filter » écrit à la
+     main : Lightning CSS fusionne les deux déclarations et ne garderait que la préfixée,
+     que Chrome ignore (il ajoute lui-même le préfixe pour Safari). */
   .glass {
     background: var(--glass);
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* En-tête : plus opaque que les panneaux, le contenu qui défile dessous ne doit pas gêner. */
+  .header-glass {
+    background: var(--header-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 0.18);
+    backdrop-filter: blur(24px) saturate(1.4);
   }
 }
 
