@@ -29,6 +29,11 @@ function toTrack(t: SpotifyTrack): Track {
     provider: "spotify",
     // L'URI (spotify:track:…) sert directement pour l'ajout à une playlist.
     providerTrackId: t.uri,
+    // La plus petite pochette d'au moins 200 px (Spotify en donne 64, 300 et 640).
+    artworkUrl:
+      [...(t.album?.images ?? [])]
+        .sort((a, b) => (a.width ?? 0) - (b.width ?? 0))
+        .find((i) => (i.width ?? 0) >= 200)?.url ?? t.album?.images?.[0]?.url,
   };
 }
 

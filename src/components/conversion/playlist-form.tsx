@@ -13,7 +13,7 @@ export function PlaylistForm({ onSubmit }: { onSubmit: (url: string) => void }) 
 
   return (
     <form
-      className="flex flex-col gap-2"
+      className="glass flex flex-col gap-2 rounded-3xl p-4 sm:p-6"
       onSubmit={(e) => {
         e.preventDefault();
         if (url.trim()) onSubmit(url.trim());

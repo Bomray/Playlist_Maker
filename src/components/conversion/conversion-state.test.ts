@@ -60,9 +60,21 @@ function review(): ConversionState {
 describe("conversionReducer", () => {
   it("lien → progression → récap", () => {
     let s = reduce(initialState, { type: "start", url: "https://deezer.com/playlist/42" });
-    s = reduce(s, { type: "playlist", name: "Ma playlist", source: "deezer", total: 3 });
-    s = reduce(s, { type: "progress", done: 2, total: 3 });
+    s = reduce(s, {
+      type: "playlist",
+      name: "Ma playlist",
+      source: "deezer",
+      total: 3,
+      tracks: [{ title: "A", artist: "X", artworkUrl: "https://e/a.jpg" }],
+    });
+    s = reduce(s, { type: "progress", done: 2, total: 3, item: { status: "uncertain" } });
     expect(s).toMatchObject({ phase: "running", playlistName: "Ma playlist", done: 2, total: 3 });
+    // Résultat rangé à l'index du titre traité, pour retourner la bonne pochette.
+    if (s.phase === "running") {
+      expect(s.tracks).toHaveLength(1);
+      expect(s.items[1]).toEqual({ status: "uncertain" });
+      expect(s.items[0]).toBeUndefined();
+    }
     s = reduce(s, { type: "done", report });
     expect(s).toMatchObject({
       phase: "review",

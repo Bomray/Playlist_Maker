@@ -68,7 +68,7 @@ installable en PWA) de stats d'écoute Spotify et de conversion de playlists ent
    - ✅ Spike images (`spikes/RESULTS-3.md`) : routes unitaires `/tracks/{id}` et
      `/artists/{id}` OK (~7 req/s sans 429), routes groupées `?ids=` en 403. Images à remplir
      en tâche de fond et à mettre en cache en base (adresses `i.scdn.co`).
-   - ⏭️ Refonte graphique, d'après la maquette finale choisie (artifact « Maquettes Playlist
+   - ✅ Refonte graphique, d'après la maquette finale choisie (artifact « Maquettes Playlist
      Maker », écrans `FIN-*`) : base « P » (aurore, verre dépoli, mosaïque de pochettes),
      **violet parme**, thème sombre et clair, logo « disque fendu B » (vinyle fendu par une
      onde en W), **minutes par défaut** avec bascule heures partout où une durée s'affiche,
@@ -93,7 +93,9 @@ installable en PWA) de stats d'écoute Spotify et de conversion de playlists ent
      - ✅ 5. Tops complets (`/?tops=titres|artistes|albums`, `tops-view.tsx`) : classement complet
        gardé dans le worker (`topLimit: Infinity`), pages de 50 au défilement, recherche sans
        accents (`core/stats/search.ts`), tri écoutes / temps ; lien « Tous les tops ».
-     - 6. Conversion au nouveau style (pochettes qui se retournent quand un titre est trouvé).
+     - ✅ 6. Conversion au nouveau style : `Track.artworkUrl` (Deezer, YouTube, Spotify), flux
+       enrichi (`tracks` dans « playlist », `item` dans « progress »), cartes qui se retournent
+       sur la pochette Spotify avec un badge trouvé / incertain / introuvable ; `ProgressBar`.
    - Stats v2 (dans les PR ci-dessus) : **sélecteur de période global** (aujourd'hui, hier,
      7 jours, mois, 6 mois, année, année précise, tout, plage libre) ; tops complets ; pages
      artiste, album et titre ; images sur titres, albums et artistes.

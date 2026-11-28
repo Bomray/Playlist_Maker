@@ -6,7 +6,8 @@ import { type Period, periodLabel, type Selection, selectionKey, type Stats } fr
 import { durationValue, unitLabel } from "./duration";
 import { EvolutionCard } from "./evolution-card";
 import { formatDate, formatInt } from "./format";
-import { Artwork, gradientFor, type ImageKind, ImagesProvider, useImage } from "./images";
+import { gradientFor } from "@/components/brand/gradient";
+import { Artwork, type ImageKind, ImagesProvider, useImage } from "./images";
 import { Moments } from "./stats-dashboard";
 import { closeSelection, entrySelection, SelectionLink } from "./selection-link";
 import { TopList } from "./top-list";

@@ -22,6 +22,7 @@ function toTrack(t: z.infer<typeof DeezerTrackSchema>): Track {
     isrc: t.isrc || null,
     provider: "deezer",
     providerTrackId: String(t.id),
+    artworkUrl: t.album?.cover_medium ?? undefined,
   };
 }
 

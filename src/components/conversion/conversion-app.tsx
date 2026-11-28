@@ -25,6 +25,8 @@ export function ConversionApp() {
           source={state.source}
           done={state.done}
           total={state.total}
+          tracks={state.tracks}
+          items={state.items}
           onCancel={cancel}
         />
       );

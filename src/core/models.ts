@@ -17,6 +17,8 @@ export interface Track {
   provider: ProviderId;
   /** Identifiant du titre sur sa plateforme (ex. URI Spotify, id Deezer). */
   providerTrackId: string;
+  /** Pochette (ou miniature de la vidéo), pour l'affichage seulement. */
+  artworkUrl?: string;
 }
 
 /** Référence vers une playlist, extraite d'un lien. */

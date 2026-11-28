@@ -89,7 +89,19 @@ describe("POST /api/convert", () => {
       "progress",
       "done",
     ]);
-    expect(evs[0]).toEqual({ type: "playlist", name: "French rap", source: "deezer", total: 2 });
+    expect(evs[0]).toEqual({
+      type: "playlist",
+      name: "French rap",
+      source: "deezer",
+      total: 2,
+      tracks: [
+        { title: "T1", artist: "A" },
+        { title: "T2", artist: "A" },
+      ],
+    });
+    // Chaque titre traité arrive avec son statut (cartes de la progression).
+    expect(evs[2]).toMatchObject({ type: "progress", done: 1, item: { status: "found" } });
+    expect(evs[3]).toMatchObject({ type: "progress", done: 2, item: { status: "not_found" } });
     const done = evs.at(-1);
     if (done?.type !== "done") throw new Error("pas de rapport");
     expect(done.report.summary).toMatchObject({ total: 2, found: 1, notFound: 1 });

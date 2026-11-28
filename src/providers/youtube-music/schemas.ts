@@ -25,6 +25,7 @@ export const PlaylistItemSchema = z.object({
     // Absent pour les vidéos supprimées ou privées.
     videoOwnerChannelTitle: z.string().optional(),
     resourceId: z.object({ videoId: z.string().optional() }),
+    thumbnails: z.record(z.string(), z.object({ url: z.string() })).optional(),
   }),
 });
 

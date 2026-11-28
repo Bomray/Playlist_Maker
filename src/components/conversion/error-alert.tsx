@@ -6,7 +6,7 @@ import { providerLabel } from "./format";
 export function ErrorAlert({ error }: { error: UserError }) {
   const who = error.provider ? `${providerLabel(error.provider)} : ` : "";
   return (
-    <div role="alert" className="rounded-lg border border-destructive/60 p-3 text-sm">
+    <div role="alert" className="glass rounded-2xl border-destructive/60 p-4 text-sm">
       <p className="font-semibold text-destructive">{titleFor(error)}</p>
       <p className="mt-1 break-words">
         {who}

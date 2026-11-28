@@ -2,14 +2,28 @@
 // (NDJSON). Partagé entre le Route Handler (écriture) et le navigateur (lecture).
 import { z } from "zod";
 import type { ConversionReport } from "@/core/convert";
+import type { MatchStatus } from "@/core/matching";
 import { ndjsonLine, readNdjson } from "./ndjson";
 import type { UserError } from "./user-error";
 
+/** Aperçu d'un titre source, pour les pochettes de la progression. */
+export interface TrackPreview {
+  title: string;
+  artist: string;
+  artworkUrl?: string;
+}
+
+/** Résultat d'un titre traité : statut et pochette Spotify trouvée. */
+export interface ProgressItem {
+  status: MatchStatus;
+  artworkUrl?: string;
+}
+
 export type ConversionEvent =
-  /** Playlist source lue : on connaît son nom et son nombre de titres. */
-  | { type: "playlist"; name: string; source: string; total: number }
-  /** Titre traité. */
-  | { type: "progress"; done: number; total: number }
+  /** Playlist source lue : nom, nombre de titres et aperçu de chacun. */
+  | { type: "playlist"; name: string; source: string; total: number; tracks?: TrackPreview[] }
+  /** Titre traité (le `done`-ième). */
+  | { type: "progress"; done: number; total: number; item?: ProgressItem }
   /** Fin : rapport complet, prêt pour le récapitulatif. */
   | { type: "done"; report: ConversionReport }
   /** Échec : la conversion s'arrête. */
@@ -23,8 +37,21 @@ const EventSchema = z.discriminatedUnion("type", [
     name: z.string(),
     source: z.string(),
     total: z.number(),
+    tracks: z
+      .array(z.object({ title: z.string(), artist: z.string(), artworkUrl: z.string().optional() }))
+      .optional(),
   }),
-  z.object({ type: z.literal("progress"), done: z.number(), total: z.number() }),
+  z.object({
+    type: z.literal("progress"),
+    done: z.number(),
+    total: z.number(),
+    item: z
+      .object({
+        status: z.enum(["found", "uncertain", "not_found", "manual"]),
+        artworkUrl: z.string().optional(),
+      })
+      .optional(),
+  }),
   z.object({
     type: z.literal("done"),
     report: z.custom<ConversionReport>((v) => typeof v === "object" && v !== null),

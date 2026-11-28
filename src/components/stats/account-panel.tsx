@@ -6,6 +6,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { formatInt } from "./format";
 import type { UploadState } from "./use-stats";
 import type { DataSource } from "./worker-protocol";
+import { ProgressBar } from "@/components/layout/progress-bar";
 
 interface Props {
   loggedIn: boolean;
@@ -52,11 +53,10 @@ export function AccountPanel(props: Props) {
       )}
       {upload.status === "sending" && (
         <>
-          <progress
-            className="h-2 w-full accent-primary"
+          <ProgressBar
             max={upload.total}
             value={upload.sent}
-            aria-label="Progression de l'enregistrement"
+            label="Progression de l'enregistrement"
           />
           <p aria-live="polite" className="text-muted-foreground">
             Enregistrement : {formatInt(upload.sent)} / {formatInt(upload.total)} écoutes…

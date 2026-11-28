@@ -56,7 +56,10 @@ export function ReviewPanel(props: Props) {
   useEffect(() => headingRef.current?.focus(), []);
 
   return (
-    <section aria-labelledby={`${id}-title`} className="flex flex-col gap-5">
+    <section
+      aria-labelledby={`${id}-title`}
+      className="glass flex flex-col gap-5 rounded-3xl p-4 sm:p-6"
+    >
       <div className="flex flex-col gap-2">
         <h2
           id={`${id}-title`}
@@ -117,7 +120,7 @@ export function ReviewPanel(props: Props) {
       })}
 
       <form
-        className="flex flex-col gap-3 rounded-lg border p-3"
+        className="flex flex-col gap-3 rounded-2xl border bg-background/40 p-4"
         onSubmit={(e) => {
           e.preventDefault();
           onCreate(name, description);
@@ -168,7 +171,7 @@ export function ReviewPanel(props: Props) {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <li className="rounded-lg bg-muted p-2">
+    <li className="rounded-2xl bg-background/50 p-2">
       <span className="block text-xl font-semibold">{value}</span>
       {label}
     </li>

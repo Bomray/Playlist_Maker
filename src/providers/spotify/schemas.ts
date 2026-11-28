@@ -9,7 +9,12 @@ export const SpotifyTrackSchema = z.object({
   type: z.string().optional(), // "track" ou "episode"
   is_local: z.boolean().optional(),
   artists: z.array(z.object({ name: z.string() })),
-  album: z.object({ name: z.string() }).nullish(),
+  album: z
+    .object({
+      name: z.string(),
+      images: z.array(z.object({ url: z.string(), width: z.number().nullish() })).optional(),
+    })
+    .nullish(),
   external_ids: z.object({ isrc: z.string().optional() }).nullish(),
 });
 

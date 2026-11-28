@@ -126,6 +126,7 @@ export function createYouTubeMusicProvider(client: YouTubeClient): MusicProvider
           isrc: null, // ni l'ISRC : le matching se fera par score (titre, artiste, durée)
           provider: "youtube-music",
           providerTrackId: videoId,
+          artworkUrl: item.snippet.thumbnails?.medium?.url ?? item.snippet.thumbnails?.default?.url,
         };
       });
 

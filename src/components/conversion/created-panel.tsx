@@ -20,7 +20,10 @@ export function CreatedPanel({ report, created, added, onRestart }: Props) {
   const missing = report.summary.total - added;
 
   return (
-    <section aria-labelledby="created-title" className="flex flex-col gap-3">
+    <section
+      aria-labelledby="created-title"
+      className="glass flex flex-col gap-3 rounded-3xl p-4 sm:p-6"
+    >
       <h2
         id="created-title"
         ref={headingRef}

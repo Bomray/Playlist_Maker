@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { type Stats, TOP_LIMIT, type TopEntry } from "@/core/stats";
 import { type DurationUnit, formatDuration } from "./duration";
 import { formatInt } from "./format";
-import { Artwork, gradientFor, type ImageKind, useImage } from "./images";
+import { gradientFor } from "@/components/brand/gradient";
+import { Artwork, type ImageKind, useImage } from "./images";
 import { entrySelection, PushLink, SelectionLink, topsHref, type TopsTab } from "./selection-link";
 import { useDurationUnit } from "./use-duration-unit";
 

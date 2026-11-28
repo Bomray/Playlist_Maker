@@ -98,8 +98,8 @@ export function summarize(results: readonly TrackMatch[]): ConversionSummary {
 export interface MatchPlaylistOptions {
   playlist: Playlist;
   destination: MusicProvider;
-  /** Appelé après chaque titre traité, pour afficher la progression. */
-  onProgress?: (done: number, total: number) => void;
+  /** Appelé après chaque titre traité (avec son résultat), pour afficher la progression. */
+  onProgress?: (done: number, total: number, last?: TrackMatch) => void;
   /** Annulation (ex. l'utilisateur a quitté la page) : arrête avant le titre suivant. */
   signal?: AbortSignal;
 }
@@ -122,8 +122,9 @@ export async function matchPlaylist({
   for (const track of playlist.tracks) {
     // Lève l'erreur d'annulation (`signal.reason`) : inutile de consommer le quota.
     signal?.throwIfAborted();
-    results.push(await matchOne(track, destination));
-    onProgress?.(results.length, total);
+    const match = await matchOne(track, destination);
+    results.push(match);
+    onProgress?.(results.length, total, match);
   }
 
   return { playlist, destination: destination.id, results, summary: summarize(results) };

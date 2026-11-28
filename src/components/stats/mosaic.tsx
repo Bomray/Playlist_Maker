@@ -5,7 +5,8 @@ import { cn } from "cn";
 import type { Stats, TopEntry } from "@/core/stats";
 import { formatDuration } from "./duration";
 import { formatInt } from "./format";
-import { Artwork, gradientFor, type ImageKind, useImage } from "./images";
+import { gradientFor } from "@/components/brand/gradient";
+import { Artwork, type ImageKind, useImage } from "./images";
 import { entrySelection, SelectionLink } from "./selection-link";
 import { useDurationUnit } from "./use-duration-unit";
 

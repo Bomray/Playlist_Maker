@@ -1,6 +1,7 @@
 // État de l'écran de conversion, sous forme de reducer pur (testable sans React).
 import { buildNewPlaylist, type ConversionReport, selectCandidate } from "@/core/convert";
 import type { CreatedPlaylist, NewPlaylist, Track } from "@/core/models";
+import type { ProgressItem, TrackPreview } from "@/lib/conversion-stream";
 import type { UserError } from "@/lib/user-error";
 import type { InitialStatus } from "./format";
 
@@ -13,6 +14,9 @@ export type ConversionState =
       source: string | null;
       done: number;
       total: number | null;
+      /** Aperçu des titres source et résultat de ceux déjà traités (même ordre). */
+      tracks: TrackPreview[];
+      items: ProgressItem[];
     }
   | {
       phase: "review" | "creating";
@@ -25,8 +29,8 @@ export type ConversionState =
 
 export type ConversionAction =
   | { type: "start"; url: string }
-  | { type: "playlist"; name: string; source: string; total: number }
-  | { type: "progress"; done: number; total: number }
+  | { type: "playlist"; name: string; source: string; total: number; tracks?: TrackPreview[] }
+  | { type: "progress"; done: number; total: number; item?: ProgressItem }
   | { type: "done"; report: ConversionReport }
   | { type: "failed"; error: UserError }
   | { type: "cancel" }
@@ -50,13 +54,29 @@ export function conversionReducer(
         source: null,
         done: 0,
         total: null,
+        tracks: [],
+        items: [],
       };
     case "playlist":
       if (state.phase !== "running") return state;
-      return { ...state, playlistName: action.name, source: action.source, total: action.total };
+      return {
+        ...state,
+        playlistName: action.name,
+        source: action.source,
+        total: action.total,
+        tracks: action.tracks ?? [],
+      };
     case "progress":
       if (state.phase !== "running") return state;
-      return { ...state, done: action.done, total: action.total };
+      return {
+        ...state,
+        done: action.done,
+        total: action.total,
+        // Le `done`-ième titre vient d'être traité : son résultat va à l'index done - 1.
+        items: action.item
+          ? Object.assign([...state.items], { [action.done - 1]: action.item })
+          : state.items,
+      };
     case "done":
       return {
         phase: "review",

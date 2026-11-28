@@ -27,7 +27,7 @@ export const DeezerTrackSchema = z.object({
   isrc: z.string().nullish(),
   readable: z.boolean().optional(),
   artist: z.object({ name: z.string() }),
-  album: z.object({ title: z.string() }).nullish(),
+  album: z.object({ title: z.string(), cover_medium: z.string().nullish() }).nullish(),
 });
 
 export const DeezerTracksPageSchema = z.object({

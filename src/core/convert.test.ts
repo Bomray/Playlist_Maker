@@ -105,12 +105,14 @@ describe("matchPlaylist", () => {
     expect(report.results[0]!.best?.method).toBe("isrc");
     expect(report.results[1]!.best?.track.providerTrackId).toBe("s2");
     expect(report.results[1]!.selected).toBeNull(); // incertain : exclu par défaut
-    expect(onProgress.mock.calls).toEqual([
+    expect(onProgress.mock.calls.map(([done, total]) => [done, total])).toEqual([
       [0, 3],
       [1, 3],
       [2, 3],
       [3, 3],
     ]);
+    // Chaque titre traité est transmis avec son résultat (pochettes de la progression).
+    expect(onProgress.mock.calls[1]![2]).toBe(report.results[0]);
   });
 
   it("interrompt la conversion sur une erreur qui toucherait tous les titres", async () => {

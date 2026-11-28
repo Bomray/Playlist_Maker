@@ -68,12 +68,26 @@ export async function POST(request: Request): Promise<Response> {
           name: playlist.name,
           source: provider.id,
           total: playlist.tracks.length,
+          tracks: playlist.tracks.map((t) => ({
+            title: t.title,
+            artist: t.artists[0] ?? "",
+            artworkUrl: t.artworkUrl,
+          })),
         });
         const report = await matchPlaylist({
           playlist,
           destination,
           signal,
-          onProgress: (done, total) => send({ type: "progress", done, total }),
+          onProgress: (done, total, last) =>
+            send({
+              type: "progress",
+              done,
+              total,
+              item: last && {
+                status: last.status,
+                artworkUrl: (last.selected ?? last.best?.track)?.artworkUrl,
+              },
+            }),
         });
         send({ type: "done", report });
       } catch (e) {

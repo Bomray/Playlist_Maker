@@ -13,6 +13,7 @@ import { TopsView } from "./tops-view";
 import { PeriodPicker } from "./period-picker";
 import { StatsDashboard } from "./stats-dashboard";
 import { useStats } from "./use-stats";
+import { ProgressBar } from "@/components/layout/progress-bar";
 
 export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
   const {
@@ -79,11 +80,10 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
         <h2 id="loading-title" className="text-lg font-semibold">
           {fromAccount ? "Chargement de ton historique…" : "Lecture de l'export…"}
         </h2>
-        <progress
-          className="h-2 w-full accent-primary"
+        <ProgressBar
           max={state.total || undefined}
           value={state.total ? state.done : undefined}
-          aria-label="Progression du chargement"
+          label="Progression du chargement"
         />
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {state.total === null
