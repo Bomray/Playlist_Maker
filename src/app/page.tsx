@@ -1,78 +1,34 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ConversionApp } from "@/components/conversion/conversion-app";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { missingScopes } from "@/providers/spotify/auth";
+import { AuthErrorAlert, PageIntro } from "@/components/layout/page-intro";
+import { StatsApp } from "@/components/stats/stats-app";
 import { readSpotifySession } from "@/providers/spotify/session";
 
-export default function Home({ searchParams }: PageProps<"/">) {
+export const metadata: Metadata = { title: "Mes stats d'écoute" };
+
+export default function StatsPage({ searchParams }: PageProps<"/">) {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:py-12">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Playlist Maker</h1>
-        <p className="text-muted-foreground">
-          Convertis une playlist Deezer ou YouTube Music en playlist Spotify, à partir de son lien.
-        </p>
-        <Link href="/stats" className="text-sm underline underline-offset-2">
-          Voir mes stats d&apos;écoute →
-        </Link>
-      </header>
-      {/* Lecture des cookies et de l'URL au moment de la requête : derrière un Suspense. */}
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 pt-8 sm:px-6 sm:pt-12">
+      <PageIntro title="Mes stats d'écoute">
+        Temps d&apos;écoute, nombre d&apos;écoutes et tops, à partir de ton export de données
+        Spotify puis de tes nouvelles écoutes.
+      </PageIntro>
+      {/* Lecture du cookie de session et de l'URL au moment de la requête : derrière un Suspense. */}
       <Suspense fallback={<p className="text-sm text-muted-foreground">Chargement…</p>}>
-        <SessionGate searchParams={searchParams} />
+        <StatsForSession searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
 
-async function SessionGate({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
+async function StatsForSession({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   const params = await searchParams;
   const authError = typeof params.auth_error === "string" ? params.auth_error : null;
   const session = await readSpotifySession();
-  const missing = session ? missingScopes(session.scope) : [];
-
   return (
-    <div className="flex flex-col gap-6">
-      {authError && (
-        <div role="alert" className="rounded-lg border border-destructive/60 p-3 text-sm">
-          <p className="font-semibold text-destructive">Échec de la connexion à Spotify</p>
-          <p className="mt-1 break-words whitespace-pre-wrap">{authError}</p>
-        </div>
-      )}
-
-      {session ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
-          <span>
-            Connecté à Spotify
-            {session.displayName ? ` (${session.displayName})` : ""}
-          </span>
-          <form action="/api/auth/spotify/logout" method="post">
-            <Button type="submit" variant="ghost" size="sm">
-              Se déconnecter
-            </Button>
-          </form>
-        </div>
-      ) : (
-        <div className="flex flex-col items-start gap-2 rounded-lg border p-3 text-sm">
-          <p>Connecte-toi à Spotify : la playlist sera créée sur ton compte.</p>
-          {/* Lien simple (pas <Link>) : ni préchargement ni navigation côté client. */}
-          <a href="/api/auth/spotify/login" className={buttonVariants({ size: "lg" })}>
-            Se connecter à Spotify
-          </a>
-        </div>
-      )}
-
-      {missing.length > 0 && (
-        <div role="alert" className="rounded-lg border border-destructive/60 p-3 text-sm">
-          <p className="font-semibold text-destructive">Droits manquants</p>
-          <p className="mt-1">
-            Ta connexion date d&apos;avant l&apos;ajout de : <code>{missing.join(", ")}</code>.
-            Déconnecte-toi puis reconnecte-toi pour les accorder.
-          </p>
-        </div>
-      )}
-
-      {session && missing.length === 0 && <ConversionApp />}
-    </div>
+    <>
+      <AuthErrorAlert message={authError} />
+      <StatsApp loggedIn={session !== null} />
+    </>
   );
 }

@@ -44,7 +44,7 @@ function exportZip(): Buffer {
 }
 
 test("export .zip → chiffres clés, tops et filtre par année", async ({ page }) => {
-  await page.goto("/stats");
+  await page.goto("/");
   await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
     name: "my_spotify_data.zip",
     mimeType: "application/zip",
@@ -68,7 +68,7 @@ test("export .zip → chiffres clés, tops et filtre par année", async ({ page 
 });
 
 test("fichier sans historique : message clair", async ({ page }) => {
-  await page.goto("/stats");
+  await page.goto("/");
   await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
     name: "autre.zip",
     mimeType: "application/zip",
@@ -90,7 +90,7 @@ test("connecté : enregistrer l'export, le retrouver, puis le supprimer", async 
   // Point de départ propre (le serveur de test peut être réutilisé d'une exécution à l'autre).
   await page.request.delete("/api/stats/history");
 
-  await page.goto("/stats");
+  await page.goto("/");
   await expect(page.getByText("Aucun historique enregistré dans ton compte")).toBeVisible({
     timeout: 60_000,
   });

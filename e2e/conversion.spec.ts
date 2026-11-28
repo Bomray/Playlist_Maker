@@ -3,8 +3,11 @@ import { encodeEvent } from "../src/lib/conversion-stream";
 import { mockConvert, report, signIn } from "./fixtures/conversion";
 
 test("sans connexion : invitation à se connecter à Spotify", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("link", { name: "Se connecter à Spotify" })).toBeVisible();
+  await page.goto("/convertir");
+  // Le lien de l'en-tête existe aussi : on vérifie celui de la page.
+  await expect(
+    page.getByRole("main").getByRole("link", { name: "Se connecter à Spotify" }),
+  ).toBeVisible();
   await expect(page.getByLabel("Lien de la playlist")).toHaveCount(0);
 });
 
@@ -18,7 +21,7 @@ test("lien → récap → validation d'un incertain", async ({ page }) => {
       encodeEvent({ type: "done", report }),
     ].join(""),
   );
-  await page.goto("/");
+  await page.goto("/convertir");
   await page.getByLabel("Lien de la playlist").fill("https://www.deezer.com/playlist/42");
   await page.getByRole("button", { name: "Convertir vers Spotify" }).click();
 
@@ -50,7 +53,7 @@ test("erreur typée affichée, formulaire conservé", async ({ page }) => {
       },
     }),
   );
-  await page.goto("/");
+  await page.goto("/convertir");
   await page.getByLabel("Lien de la playlist").fill("https://www.deezer.com/playlist/1");
   await page.getByRole("button", { name: "Convertir vers Spotify" }).click();
   await expect(page.getByRole("alert").filter({ hasText: "Introuvable" })).toContainText(

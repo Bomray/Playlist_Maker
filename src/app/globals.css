@@ -2,23 +2,17 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Thème sombre automatique selon le système (pas encore de sélecteur manuel). */
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/*
+ * Thème : classe `dark` posée sur <html> par le script de démarrage (voir lib/theme.ts).
+ * Par défaut elle suit le réglage du système ; l'utilisateur peut forcer clair ou sombre.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -41,6 +35,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -50,78 +46,72 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Thème clair : fond lilas très pâle, accent parme foncé (contraste ≥ 4,5:1 sur blanc). */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  /* Série unique des graphiques de stats (validée : contraste ≥ 3:1 sur le fond). */
-  --viz-series: #257de0;
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #f7f5fb;
+  --foreground: #17121f;
+  --card: #ffffff;
+  --card-foreground: #17121f;
+  --popover: #ffffff;
+  --popover-foreground: #17121f;
+  --primary: #7a4fb5;
+  --primary-foreground: #ffffff;
+  --secondary: #ece6f5;
+  --secondary-foreground: #17121f;
+  --muted: #efebf6;
+  --muted-foreground: #5f5873;
+  --accent: #e7def4;
+  --accent-foreground: #17121f;
+  --destructive: #c42b3a;
+  --border: #e3ddee;
+  --input: #d9d1e8;
+  --ring: #9b72cc;
+  /* Série unique des graphiques de stats (contraste ≥ 3:1 sur le fond). */
+  --viz-series: #7a4fb5;
+  --chart-1: #c9a2e6;
+  --chart-2: #9b72cc;
+  --chart-3: #7a4fb5;
+  --chart-4: #5e3f8c;
+  --chart-5: #3f2668;
+  --glass: rgb(255 255 255 / 0.62);
+  --glass-border: rgb(23 18 31 / 0.08);
+  --aurora-1: #d7b8f0;
+  --aurora-2: #b9cdf2;
+  --aurora-opacity: 0.55;
+  --radius: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --viz-series: #338ced;
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
+/* Thème sombre : presque noir violacé, accent violet parme. */
+.dark {
+  --background: #0a0812;
+  --foreground: #f6f4ff;
+  --card: #15111f;
+  --card-foreground: #f6f4ff;
+  --popover: #17132a;
+  --popover-foreground: #f6f4ff;
+  --primary: #c9a2e6;
+  --primary-foreground: #1a1024;
+  --secondary: #221c33;
+  --secondary-foreground: #f6f4ff;
+  --muted: #1c1729;
+  --muted-foreground: #b3acc9;
+  --accent: #2a2140;
+  --accent-foreground: #f6f4ff;
+  --destructive: #ff7a85;
+  --border: rgb(255 255 255 / 0.1);
+  --input: rgb(255 255 255 / 0.14);
+  --ring: #c9a2e6;
+  --viz-series: #c9a2e6;
+  --chart-1: #ecd8fb;
+  --chart-2: #c9a2e6;
+  --chart-3: #a27ad4;
+  --chart-4: #7b5aa8;
+  --chart-5: #3f2668;
+  --glass: rgb(255 255 255 / 0.06);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --aurora-1: #7b4fae;
+  --aurora-2: #2f5a7a;
+  --aurora-opacity: 0.5;
 }
 
 @layer base {
@@ -133,5 +123,86 @@
   }
   html {
     @apply font-sans;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  /* Verre dépoli : panneaux posés sur l'aurore. */
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+/* Aurore : deux taches de couleur floues qui dérivent lentement derrière le contenu. */
+@keyframes aurora-drift-1 {
+  50% {
+    transform: translate(12vw, 8vh) scale(1.15);
+  }
+}
+@keyframes aurora-drift-2 {
+  50% {
+    transform: translate(-14vw, -6vh) scale(0.9);
+  }
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(110px);
+  opacity: var(--aurora-opacity);
+}
+.aurora-blob-1 {
+  width: 55vw;
+  height: 55vw;
+  left: -15vw;
+  top: -25vw;
+  background: var(--aurora-1);
+  animation: aurora-drift-1 26s ease-in-out infinite;
+}
+.aurora-blob-2 {
+  width: 45vw;
+  height: 45vw;
+  right: -12vw;
+  bottom: -20vw;
+  background: var(--aurora-2);
+  animation: aurora-drift-2 30s ease-in-out infinite;
+}
+
+/* Logo : les deux moitiés du disque s'écartent légèrement à l'apparition. */
+@keyframes logo-top {
+  from {
+    transform: translateY(0);
+  }
+}
+@keyframes logo-bottom {
+  from {
+    transform: translateY(0);
+  }
+}
+.logo-top {
+  transform: translateY(-6px);
+  animation: logo-top 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.logo-bottom {
+  transform: translateY(6px);
+  animation: logo-bottom 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  .logo-top,
+  .logo-bottom {
+    animation: none;
   }
 }

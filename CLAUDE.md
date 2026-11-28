@@ -5,8 +5,8 @@ quand une décision change, change-la ici.
 
 ## Le projet
 
-Application web (responsive, puis installable en PWA) pour manipuler des playlists
-entre plateformes de streaming.
+**Wavl** (wave + vinyl / level ; dépôt `Playlist_Maker`) : application web (responsive, puis
+installable en PWA) de stats d'écoute Spotify et de conversion de playlists entre plateformes.
 
 - **V1 (en cours)** : convertir une playlist d'une plateforme vers une autre en un clic,
   à partir de son lien. Plateformes visées : Spotify, YouTube Music, Deezer, SoundCloud.
@@ -68,14 +68,25 @@ entre plateformes de streaming.
    - ✅ Spike images (`spikes/RESULTS-3.md`) : routes unitaires `/tracks/{id}` et
      `/artists/{id}` OK (~7 req/s sans 429), routes groupées `?ids=` en 403. Images à remplir
      en tâche de fond et à mettre en cache en base (adresses `i.scdn.co`).
-   - ⏭️ Refonte graphique PC et mobile : **style sombre type appli musique** (thème clair
-     gardé). Proposer **plusieurs maquettes PC + mobile** et laisser l'utilisateur choisir avant
-     d'implémenter.
-   - Stats v2 : unité au choix (minutes / heures / jours) ; **sélecteur de période global**
-     (aujourd'hui, hier, 7 jours, mois, 6 mois, année, année précise, tout, plage libre) ;
-     tops complets (tous les titres / artistes / albums, recherche) ; pages artiste et titre
-     (stats, titres de l'artiste, évolution par jour / semaine / mois / année) ; images sur
-     titres, albums et artistes.
+   - ⏭️ Refonte graphique, d'après la maquette finale choisie (artifact « Maquettes Playlist
+     Maker », écrans `FIN-*`) : base « P » (aurore, verre dépoli, mosaïque de pochettes),
+     **violet parme**, thème sombre et clair, logo « disque fendu B » (vinyle fendu par une
+     onde en W), **minutes par défaut** avec bascule heures partout où une durée s'affiche,
+     pages qui défilent (pas d'écran figé). Six PR :
+     - ✅ 1. Thème et base : nom Wavl, logo (`components/brand/logo.tsx`, `app/icon.svg`),
+       couleurs et classe `dark` (`lib/theme.ts`, bouton système → sombre → clair), aurore,
+       en-tête en verre et barre du bas sur téléphone (`components/layout/`). Accueil `/` =
+       stats, conversion sur `/convertir`, `/stats` redirige vers `/`.
+     - 2. Page Stats : mosaïque, temps en minutes ou heures, sélecteur de période global,
+          courbe d'évolution (bascule calendrier), **minuteur avant la prochaine collecte**
+          (GitHub Actions à la minute 17 de chaque heure, UTC ; exécution parfois en retard).
+     - 3. Images : pochettes et photos Spotify remplies en tâche de fond, cache en base.
+     - 4. Pages artiste, album et titre : courbe d'évolution et calendrier jour par jour.
+     - 5. Tops complets : recherche, onglets titres / artistes / albums, chargement au défilement.
+     - 6. Conversion au nouveau style (pochettes qui se retournent quand un titre est trouvé).
+   - Stats v2 (dans les PR ci-dessus) : **sélecteur de période global** (aujourd'hui, hier,
+     7 jours, mois, 6 mois, année, année précise, tout, plage libre) ; tops complets ; pages
+     artiste, album et titre ; images sur titres, albums et artistes.
    - Ensuite : notes sur 10 (titre, album, artiste ; moyenne des titres ou note fixée),
      autres idées de fonctionnalités, puis génération de playlist par IA (clé payante ;
      corriger d'abord le score des sources sans durée, voir `spikes/RESULTS-2.md`).
