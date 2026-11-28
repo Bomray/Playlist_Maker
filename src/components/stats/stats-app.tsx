@@ -1,52 +1,13 @@
 "use client";
 // Écran des stats : dépôt de l'export → lecture (progression) → stats par période.
 import { Button } from "@/components/ui/button";
-import type { Stats } from "@/core/stats";
-import { type Column, ColumnChart } from "./column-chart";
 import { AccountPanel } from "./account-panel";
 import { CollectPanel } from "./collect-panel";
 import { ExportDrop } from "./export-drop";
-import { formatDate, formatInt, monthLabels, WEEKDAY_LABELS, WEEKDAY_NAMES } from "./format";
-import { KpiTiles } from "./kpi-tiles";
-import { TopList } from "./top-list";
-import { type Period, useStats } from "./use-stats";
-
-function charts(stats: Stats, period: Period): { title: string; columns: Column[] }[] {
-  const out: { title: string; columns: Column[] }[] = [];
-  if (period.kind === "all" && stats.byYear.length > 1) {
-    out.push({
-      title: "Temps d'écoute par année",
-      columns: stats.byYear.map((b) => ({ ...b, label: b.key, axisLabel: b.key })),
-    });
-  }
-  out.push({
-    title: "Temps d'écoute par mois",
-    columns: stats.byMonth.map((b) => {
-      const { long, short } = monthLabels(b.key);
-      // Sur plusieurs années, une étiquette par année (janvier) pour ne pas surcharger l'axe.
-      const axisLabel =
-        period.kind === "year" ? short : b.key.endsWith("-01") ? `'${b.key.slice(2, 4)}` : null;
-      return { ...b, label: long, axisLabel };
-    }),
-  });
-  out.push({
-    title: "Par jour de la semaine",
-    columns: stats.byWeekday.map((b, i) => ({
-      ...b,
-      label: WEEKDAY_NAMES[i] ?? b.key,
-      axisLabel: WEEKDAY_LABELS[i] ?? null,
-    })),
-  });
-  out.push({
-    title: "Par heure de la journée",
-    columns: stats.byHour.map((b, i) => ({
-      ...b,
-      label: `${i} h – ${i + 1} h`,
-      axisLabel: i % 3 === 0 ? `${i}h` : null,
-    })),
-  });
-  return out;
-}
+import { formatInt } from "./format";
+import { PeriodPicker } from "./period-picker";
+import { StatsDashboard } from "./stats-dashboard";
+import { useStats } from "./use-stats";
 
 export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
   const { state, load, loadAccount, selectPeriod, upload, deleteAccountData, reset } =
@@ -135,6 +96,8 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
       </div>
 
       {collect}
+      <PeriodPicker period={period} years={years} onChange={selectPeriod} />
+      <StatsDashboard stats={stats} period={period} />
 
       <AccountPanel
         loggedIn={loggedIn}
@@ -146,52 +109,6 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
         onAddExport={reset}
         onDelete={deleteAccountData}
       />
-
-      <div role="group" aria-label="Période" className="flex flex-wrap gap-1">
-        <Button
-          size="sm"
-          variant={period.kind === "all" ? "default" : "outline"}
-          aria-pressed={period.kind === "all"}
-          onClick={() => selectPeriod({ kind: "all" })}
-        >
-          Tout
-        </Button>
-        {years.map((y) => {
-          const active = period.kind === "year" && period.year === y;
-          return (
-            <Button
-              key={y}
-              size="sm"
-              variant={active ? "default" : "outline"}
-              aria-pressed={active}
-              onClick={() => selectPeriod({ kind: "year", year: y })}
-            >
-              {y}
-            </Button>
-          );
-        })}
-      </div>
-
-      {!stats ? (
-        <p aria-live="polite" className="text-sm text-muted-foreground">
-          Calcul des stats…
-        </p>
-      ) : (
-        <>
-          <p className="text-sm">
-            {stats.range
-              ? `Du ${formatDate(stats.range.first)} au ${formatDate(stats.range.last)}`
-              : "Aucune écoute sur cette période."}
-          </p>
-          <KpiTiles stats={stats} />
-          <div className="grid gap-6 sm:grid-cols-2">
-            {charts(stats, period).map((c) => (
-              <ColumnChart key={c.title} title={c.title} columns={c.columns} />
-            ))}
-          </div>
-          <TopList stats={stats} />
-        </>
-      )}
     </div>
   );
 }

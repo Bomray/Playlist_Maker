@@ -1,8 +1,11 @@
+"use client";
 // Histogramme à une seule série, en HTML/CSS (pas de bibliothèque de graphiques).
 // Règles appliquées : barres ≤ 24 px, bout arrondi de 4 px, écart de 2 px, une seule
 // étiquette directe (le maximum), info-bulle au survol et au focus clavier, tableau
 // pour les lecteurs d'écran.
-import { formatHours, formatInt } from "./format";
+import { formatDuration } from "./duration";
+import { formatInt } from "./format";
+import { useDurationUnit } from "./use-duration-unit";
 
 export interface Column {
   key: string;
@@ -20,6 +23,7 @@ interface Props {
 }
 
 export function ColumnChart({ title, columns }: Props) {
+  const [unit] = useDurationUnit();
   const max = Math.max(1, ...columns.map((c) => c.msPlayed));
   const peak = columns.reduce<Column | null>(
     (best, c) => (!best || c.msPlayed > best.msPlayed ? c : best),
@@ -44,7 +48,7 @@ export function ColumnChart({ title, columns }: Props) {
                     className="absolute text-[0.7rem] whitespace-nowrap text-muted-foreground"
                     style={{ bottom: `calc(${height}% + 2px)` }}
                   >
-                    {formatHours(c.msPlayed)}
+                    {formatDuration(c.msPlayed, unit)}
                   </span>
                 )}
                 <div
@@ -55,7 +59,7 @@ export function ColumnChart({ title, columns }: Props) {
                 <div className="pointer-events-none absolute bottom-full z-10 mb-1 hidden w-max rounded-md border bg-popover px-2 py-1 text-xs text-popover-foreground shadow-sm group-hover:block">
                   <span className="font-medium">{c.label}</span>
                   <br />
-                  {formatHours(c.msPlayed)} · {formatInt(c.plays)} écoutes
+                  {formatDuration(c.msPlayed, unit)} · {formatInt(c.plays)} écoutes
                 </div>
               </div>
             );
@@ -85,7 +89,7 @@ export function ColumnChart({ title, columns }: Props) {
           {columns.map((c) => (
             <tr key={c.key}>
               <th scope="row">{c.label}</th>
-              <td>{formatHours(c.msPlayed)}</td>
+              <td>{formatDuration(c.msPlayed, unit)}</td>
               <td>{formatInt(c.plays)}</td>
             </tr>
           ))}

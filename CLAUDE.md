@@ -77,9 +77,11 @@ installable en PWA) de stats d'écoute Spotify et de conversion de playlists ent
        couleurs et classe `dark` (`lib/theme.ts`, bouton système → sombre → clair), aurore,
        en-tête en verre et barre du bas sur téléphone (`components/layout/`). Accueil `/` =
        stats, conversion sur `/convertir`, `/stats` redirige vers `/`.
-     - 2. Page Stats : mosaïque, temps en minutes ou heures, sélecteur de période global,
-          courbe d'évolution (bascule calendrier), **minuteur avant la prochaine collecte**
-          (GitHub Actions à la minute 17 de chaque heure, UTC ; exécution parfois en retard).
+     - ✅ 2. Page Stats : périodes dans `core/stats/period.ts` (aujourd'hui … plage libre),
+       `byDay` + `core/stats/evolution.ts` (courbe par jour / semaine / mois, calendrier),
+       préférence minutes / heures (`components/stats/use-duration-unit.tsx`, clé
+       `wavl-duration-unit`), mosaïque des n°1 (dégradés en attendant les images), minuteur
+       `core/stats/schedule.ts` (minute 17 UTC ; attente et rechargement si le relevé tarde).
      - 3. Images : pochettes et photos Spotify remplies en tâche de fond, cache en base.
      - 4. Pages artiste, album et titre : courbe d'évolution et calendrier jour par jour.
      - 5. Tops complets : recherche, onglets titres / artistes / albums, chargement au défilement.

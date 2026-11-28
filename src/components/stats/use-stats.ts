@@ -2,10 +2,8 @@
 // Pilote le Web Worker de stats : export déposé ou historique enregistré, calcul par période,
 // enregistrement dans le compte et suppression.
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Stats } from "@/core/stats";
+import { type Period, periodBounds, type Stats } from "@/core/stats";
 import type { DataSource, WorkerRequest, WorkerResponse } from "./worker-protocol";
-
-export type Period = { kind: "all" } | { kind: "year"; year: number };
 
 export type UploadState =
   | { status: "idle" }
@@ -42,15 +40,6 @@ const IDLE: Extract<StatsState, { phase: "idle" }> = {
   notice: null,
 };
 
-/** Bornes d'une période, dans le fuseau du navigateur (celui utilisé pour les calculs). */
-function bounds(period: Period): { from?: number; to?: number } {
-  if (period.kind === "all") return {};
-  return {
-    from: new Date(period.year, 0, 1).getTime(),
-    to: new Date(period.year + 1, 0, 1).getTime() - 1,
-  };
-}
-
 export function useStats(loggedIn: boolean) {
   // Connecté : on commence directement par charger l'historique enregistré.
   const [state, setState] = useState<StatsState>(() =>
@@ -58,6 +47,8 @@ export function useStats(loggedIn: boolean) {
   );
   const workerRef = useRef<Worker | null>(null);
   const timeZone = useRef(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  // Période gardée d'un chargement à l'autre (ex. rechargement après un relevé automatique).
+  const periodRef = useRef<Period>({ kind: "all" });
 
   const send = (msg: WorkerRequest) => workerRef.current?.postMessage(msg);
 
@@ -72,11 +63,11 @@ export function useStats(loggedIn: boolean) {
         setState({
           phase: "ready",
           ...rest,
-          period: { kind: "all" },
+          period: periodRef.current,
           stats: null,
           upload: { status: "idle" },
         });
-        send({ type: "compute", timeZone: timeZone.current });
+        send({ type: "compute", timeZone: timeZone.current, ...periodBounds(periodRef.current) });
         break;
       }
       case "accountEmpty":
@@ -149,8 +140,9 @@ export function useStats(loggedIn: boolean) {
   }, [loggedIn, spawn]);
 
   const selectPeriod = useCallback((period: Period) => {
+    periodRef.current = period;
     setState((s) => (s.phase === "ready" ? { ...s, period } : s));
-    send({ type: "compute", timeZone: timeZone.current, ...bounds(period) });
+    send({ type: "compute", timeZone: timeZone.current, ...periodBounds(period) });
   }, []);
 
   const upload = useCallback(() => {

@@ -70,6 +70,8 @@ describe("computeStats", () => {
       ["2024", 2],
     ]);
     expect(s.byMonth.map((b) => b.key)).toEqual(["2023-12", "2024-01"]);
+    expect(s.byDay.map((b) => b.key)[0]).toMatch(/^2023-12-\d{2}$/);
+    expect(s.byDay.reduce((n, b) => n + b.msPlayed, 0)).toBe(s.music.msPlayed);
     expect(s.byHour[23]!.plays).toBe(1); // 22:30 UTC = 23:30 à Paris
     expect(s.byHour[11]!.plays).toBe(1);
     expect(s.byWeekday[6]!.plays).toBe(1); // dimanche

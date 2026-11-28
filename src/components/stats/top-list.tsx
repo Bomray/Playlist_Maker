@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { type Stats, TOP_LIMIT, type TopEntry } from "@/core/stats";
-import { formatHours, formatInt } from "./format";
+import { type DurationUnit, formatDuration } from "./duration";
+import { formatInt } from "./format";
+import { useDurationUnit } from "./use-duration-unit";
 
 type Kind = "topTracks" | "topArtists" | "topAlbums";
 type Metric = "plays" | "msPlayed";
@@ -15,14 +17,15 @@ const KINDS: { kind: Kind; label: string }[] = [
 ];
 
 const value = (e: TopEntry, metric: Metric) => (metric === "plays" ? e.plays : e.msPlayed);
-const display = (e: TopEntry, metric: Metric) =>
-  metric === "plays" ? `${formatInt(e.plays)} écoutes` : formatHours(e.msPlayed);
+const display = (e: TopEntry, metric: Metric, unit: DurationUnit) =>
+  metric === "plays" ? `${formatInt(e.plays)} écoutes` : formatDuration(e.msPlayed, unit);
 
 /** Tops titres / artistes / albums, classés par écoutes ou par temps d'écoute. */
 export function TopList({ stats }: { stats: Stats }) {
   const [kind, setKind] = useState<Kind>("topTracks");
   const [metric, setMetric] = useState<Metric>("plays");
   const [expanded, setExpanded] = useState(false);
+  const [unit] = useDurationUnit();
 
   const entries = [...stats[kind]]
     .sort((a, b) => value(b, metric) - value(a, metric))
@@ -31,7 +34,10 @@ export function TopList({ stats }: { stats: Stats }) {
   const max = Math.max(1, ...entries.map((e) => value(e, metric)));
 
   return (
-    <section aria-labelledby="top-title" className="flex flex-col gap-3">
+    <section
+      aria-labelledby="top-title"
+      className="glass flex flex-col gap-3 rounded-3xl p-4 sm:p-6"
+    >
       <h2 id="top-title" className="text-lg font-semibold">
         Tops
       </h2>
@@ -84,7 +90,7 @@ export function TopList({ stats }: { stats: Stats }) {
                   {e.sublabel && <span className="text-muted-foreground"> — {e.sublabel}</span>}
                 </span>
                 <span className="shrink-0 text-muted-foreground tabular-nums">
-                  {display(e, metric)}
+                  {display(e, metric, unit)}
                 </span>
               </div>
               {/* Barre proportionnelle au premier du classement (décorative : la valeur est écrite). */}

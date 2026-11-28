@@ -40,6 +40,8 @@ export interface Stats {
   byYear: Bucket[];
   /** Clé « 2024-03 ». */
   byMonth: Bucket[];
+  /** Clé « 2024-03-14 », seulement les jours avec au moins une lecture. */
+  byDay: Bucket[];
   /** Index 0 = lundi … 6 = dimanche. */
   byWeekday: Bucket[];
   /** Index 0 … 23. */
@@ -154,6 +156,7 @@ export function computeStats(plays: readonly Play[], { from, to, timeZone }: Sta
   const albums = new Map<string, TopEntry>();
   const years = new Map<string, Bucket>();
   const months = new Map<string, Bucket>();
+  const dayBuckets = new Map<string, Bucket>();
   const weekdays = new Map<string, Bucket>();
   const hours = new Map<string, Bucket>();
   const days = new Set<string>();
@@ -194,6 +197,7 @@ export function computeStats(plays: readonly Play[], { from, to, timeZone }: Sta
     const l = local(p.endedAt);
     add(years, l.year, p.msPlayed, counted);
     add(months, `${l.year}-${l.month}`, p.msPlayed, counted);
+    add(dayBuckets, `${l.year}-${l.month}-${l.day}`, p.msPlayed, counted);
     add(weekdays, String(l.weekday), p.msPlayed, counted);
     add(hours, String(l.hour), p.msPlayed, counted);
     if (counted) days.add(`${l.year}-${l.month}-${l.day}`);
@@ -212,6 +216,7 @@ export function computeStats(plays: readonly Play[], { from, to, timeZone }: Sta
     topAlbums: top(albums),
     byYear: sortedBuckets(years),
     byMonth: sortedBuckets(months),
+    byDay: sortedBuckets(dayBuckets),
     byWeekday: fixedBuckets(weekdays, 7),
     byHour: fixedBuckets(hours, 24),
   };
