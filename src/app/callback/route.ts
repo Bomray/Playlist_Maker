@@ -9,7 +9,7 @@ import {
   spotifyAuthConfig,
 } from "@/providers/spotify/session";
 
-// Après la connexion, retour sur l'écran de conversion.
+// Après la connexion, retour sur l'accueil (les stats).
 const AFTER_LOGIN = "/";
 
 function backWithError(message: string) {

@@ -1,7 +1,7 @@
-# Playlist_Maker
+# Wavl
 
-Convertisseur de playlists entre plateformes de streaming (Deezer et YouTube Music →
-Spotify) et stats d'écoute Spotify. En ligne : https://playlist-maker-bomray.vercel.app
+Stats d'écoute Spotify en détail et convertisseur de playlists entre plateformes de streaming
+(Deezer et YouTube Music → Spotify). Le dépôt garde son ancien nom, `Playlist_Maker`. En ligne : https://playlist-maker-bomray.vercel.app
 
 Voir `CLAUDE.md` pour l'architecture, les conventions et l'avancement.
 

@@ -48,7 +48,7 @@ export function ReviewPanel(props: Props) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [name, setName] = useState(report.playlist.name);
   const [description, setDescription] = useState(
-    `Convertie depuis ${providerLabel(report.playlist.ref.provider)} avec Playlist Maker`,
+    `Convertie depuis ${providerLabel(report.playlist.ref.provider)} avec Wavl`,
   );
   const { summary } = report;
 
