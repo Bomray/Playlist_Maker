@@ -5,14 +5,8 @@ import { cn } from "cn";
 import type { Stats, TopEntry } from "@/core/stats";
 import { formatDuration } from "./duration";
 import { formatInt } from "./format";
+import { Artwork, gradientFor, type ImageKind, useImage } from "./images";
 import { useDurationUnit } from "./use-duration-unit";
-
-/** Teinte stable dérivée du nom, autour du violet parme (pour varier sans jurer). */
-function hue(name: string): number {
-  let h = 0;
-  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return 230 + (h % 110); // de bleu à rose
-}
 
 function initials(name: string): string {
   const words = name
@@ -26,23 +20,22 @@ function initials(name: string): string {
 
 interface TileProps {
   entry: TopEntry;
+  kind: ImageKind;
   caption: string;
   large?: boolean;
   className?: string;
 }
 
-function Tile({ entry, caption, large, className }: TileProps) {
+function Tile({ entry, kind, caption, large, className }: TileProps) {
   const [unit] = useDurationUnit();
-  const h = hue(entry.label);
+  const image = useImage(kind, entry);
   return (
     <li
       className={cn(
         "group relative isolate flex min-h-32 flex-col justify-end overflow-hidden rounded-3xl p-3 text-white sm:p-4",
         className,
       )}
-      style={{
-        background: `linear-gradient(135deg, oklch(0.62 0.16 ${h}), oklch(0.32 0.12 ${h + 30}))`,
-      }}
+      style={{ background: gradientFor(entry.label) }}
     >
       <span
         aria-hidden
@@ -52,6 +45,12 @@ function Tile({ entry, caption, large, className }: TileProps) {
         )}
       >
         {initials(entry.label)}
+      </span>
+      <span aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
+        <Artwork
+          src={image}
+          className="transition-[opacity,scale] group-hover:scale-105 motion-reduce:group-hover:scale-100"
+        />
       </span>
       {/* Voile pour garder le texte lisible quelle que soit la teinte. */}
       <span
@@ -89,14 +88,15 @@ export function Mosaic({ stats }: { stats: Stats }) {
       <ul className="grid auto-rows-[minmax(8rem,auto)] grid-cols-2 gap-3 lg:grid-cols-4">
         <Tile
           entry={artists[0]}
+          kind="artist"
           caption="Artiste n°1"
           large
           className="col-span-2 row-span-2 min-h-64"
         />
-        {track && <Tile entry={track} caption="Titre n°1" />}
-        {album && <Tile entry={album} caption="Album n°1" />}
+        {track && <Tile entry={track} kind="track" caption="Titre n°1" />}
+        {album && <Tile entry={album} kind="album" caption="Album n°1" />}
         {artists.slice(1, 3).map((a, i) => (
-          <Tile key={a.key} entry={a} caption={`Artiste n°${i + 2}`} />
+          <Tile key={a.key} entry={a} kind="artist" caption={`Artiste n°${i + 2}`} />
         ))}
       </ul>
     </section>

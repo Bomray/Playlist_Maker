@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { type Stats, TOP_LIMIT, type TopEntry } from "@/core/stats";
 import { type DurationUnit, formatDuration } from "./duration";
 import { formatInt } from "./format";
+import { Artwork, gradientFor, type ImageKind, useImage } from "./images";
 import { useDurationUnit } from "./use-duration-unit";
 
 type Kind = "topTracks" | "topArtists" | "topAlbums";
@@ -15,6 +16,27 @@ const KINDS: { kind: Kind; label: string }[] = [
   { kind: "topArtists", label: "Artistes" },
   { kind: "topAlbums", label: "Albums" },
 ];
+
+const IMAGE_KIND: Record<Kind, ImageKind> = {
+  topTracks: "track",
+  topArtists: "artist",
+  topAlbums: "album",
+};
+
+/** Vignette : pochette (carrée) ou photo d'artiste (ronde), dégradé en attendant. */
+function Thumb({ entry, kind }: { entry: TopEntry; kind: ImageKind }) {
+  const src = useImage(kind, entry);
+  const round = kind === "artist";
+  return (
+    <span
+      aria-hidden
+      className={`relative size-10 shrink-0 overflow-hidden ${round ? "rounded-full" : "rounded-lg"}`}
+      style={{ background: gradientFor(entry.label) }}
+    >
+      <Artwork src={src} round={round} />
+    </span>
+  );
+}
 
 const value = (e: TopEntry, metric: Metric) => (metric === "plays" ? e.plays : e.msPlayed);
 const display = (e: TopEntry, metric: Metric, unit: DurationUnit) =>
@@ -80,25 +102,28 @@ export function TopList({ stats }: { stats: Stats }) {
       ) : (
         <ol className="flex flex-col gap-2">
           {shown.map((e, i) => (
-            <li key={e.key} className="flex flex-col gap-1">
-              <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="min-w-0 break-words">
-                  <span className="mr-2 inline-block w-6 text-right text-muted-foreground tabular-nums">
-                    {i + 1}
+            <li key={e.key} className="flex items-center gap-3">
+              <span className="w-6 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
+                {i + 1}
+              </span>
+              <Thumb entry={e} kind={IMAGE_KIND[kind]} />
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <div className="flex items-baseline justify-between gap-3 text-sm">
+                  <span className="min-w-0 break-words">
+                    <span className="font-medium">{e.label}</span>
+                    {e.sublabel && <span className="text-muted-foreground"> — {e.sublabel}</span>}
                   </span>
-                  <span className="font-medium">{e.label}</span>
-                  {e.sublabel && <span className="text-muted-foreground"> — {e.sublabel}</span>}
-                </span>
-                <span className="shrink-0 text-muted-foreground tabular-nums">
-                  {display(e, metric, unit)}
-                </span>
-              </div>
-              {/* Barre proportionnelle au premier du classement (décorative : la valeur est écrite). */}
-              <div aria-hidden className="ml-8 h-1.5 rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-viz-series"
-                  style={{ width: `${(value(e, metric) / max) * 100}%` }}
-                />
+                  <span className="shrink-0 text-muted-foreground tabular-nums">
+                    {display(e, metric, unit)}
+                  </span>
+                </div>
+                {/* Barre proportionnelle au premier du classement (décorative : la valeur est écrite). */}
+                <div aria-hidden className="h-1.5 rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-viz-series"
+                    style={{ width: `${(value(e, metric) / max) * 100}%` }}
+                  />
+                </div>
               </div>
             </li>
           ))}

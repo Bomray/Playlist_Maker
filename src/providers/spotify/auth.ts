@@ -133,3 +133,30 @@ export function refreshTokens(
     refreshToken,
   );
 }
+
+const AppTokenSchema = z.object({ access_token: z.string(), expires_in: z.number() });
+
+/**
+ * Token de l'application (« client credentials »), sans utilisateur : suffit pour lire les
+ * données publiques du catalogue (pochettes, photos d'artistes). Corps sans `client_id` :
+ * l'en-tête Basic vient du secret, ou du proxy en session cloud.
+ */
+export async function appToken(
+  config: SpotifyAuthConfig,
+): Promise<{ accessToken: string; expiresAt: number }> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+  if (config.clientSecret) {
+    const basic = Buffer.from(`${config.clientId}:${config.clientSecret}`).toString("base64");
+    headers.Authorization = `Basic ${basic}`;
+  }
+  const res = await fetchJson(TOKEN_URL, AppTokenSchema, {
+    provider: "spotify",
+    method: "POST",
+    headers,
+    body: new URLSearchParams({ grant_type: "client_credentials" }),
+    cache: "no-store",
+  });
+  return { accessToken: res.access_token, expiresAt: Date.now() + res.expires_in * 1000 };
+}

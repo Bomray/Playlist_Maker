@@ -117,37 +117,72 @@ test("fichier sans historique : message clair", async ({ page }) => {
   );
 });
 
-test("connecté : enregistrer l'export, le retrouver, puis le supprimer", async ({
-  page,
-}, testInfo) => {
-  // Une seule exécution : desktop et mobile partagent l'utilisateur de test et son historique.
-  test.skip(testInfo.project.name !== "desktop", "parcours avec écriture en base : une seule fois");
-  await signIn(page);
-  // Point de départ propre (le serveur de test peut être réutilisé d'une exécution à l'autre).
-  await page.request.delete("/api/stats/history");
+// Les deux parcours connectés partagent l'utilisateur de test : l'un après l'autre.
+test.describe.serial("connecté", () => {
+  test("enregistrer l'export, le retrouver, puis le supprimer", async ({ page }, testInfo) => {
+    // Une seule exécution : desktop et mobile partagent l'utilisateur de test et son historique.
+    test.skip(
+      testInfo.project.name !== "desktop",
+      "parcours avec écriture en base : une seule fois",
+    );
+    await signIn(page);
+    // Point de départ propre (le serveur de test peut être réutilisé d'une exécution à l'autre).
+    await page.request.delete("/api/stats/history");
 
-  await page.goto("/");
-  await expect(page.getByText("Aucun historique enregistré dans ton compte")).toBeVisible({
-    timeout: 60_000,
+    await page.goto("/");
+    await expect(page.getByText("Aucun historique enregistré dans ton compte")).toBeVisible({
+      timeout: 60_000,
+    });
+
+    await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+      name: "my_spotify_data.zip",
+      mimeType: "application/zip",
+      buffer: exportZip(),
+    });
+    const tiles = page.getByRole("region", { name: "Chiffres clés" });
+    await expect(tiles).toContainText("5écoutes", { timeout: 60_000 });
+
+    await page.getByRole("button", { name: "Enregistrer dans mon compte" }).click();
+    await expect(page.getByText(/7 nouvelles/)).toBeVisible();
+
+    // Rechargement : l'historique vient maintenant du compte, sans redéposer le fichier.
+    await page.reload();
+    await expect(page.getByText("7 écoutes enregistrées")).toBeVisible({ timeout: 60_000 });
+    await expect(tiles).toContainText("5écoutes");
+
+    await page.getByRole("button", { name: "Supprimer mes données d'écoute" }).click();
+    await page.getByRole("button", { name: "Oui, tout supprimer" }).click();
+    await expect(page.getByText("7 écoutes supprimées de ton compte.")).toBeVisible();
   });
 
-  await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
-    name: "my_spotify_data.zip",
-    mimeType: "application/zip",
-    buffer: exportZip(),
+  test("pochettes et photos dans la mosaïque et les tops", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "écrit en base : une seule fois");
+    await signIn(page);
+    await page.request.delete("/api/stats/history");
+    // Images simulées : la vraie route lit le cache rempli par la tâche horaire.
+    const cover = (color: string) =>
+      `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${color}"/></svg>`)}`;
+    await page.route("**/api/stats/images", (route) =>
+      route.fulfill({
+        json: {
+          tracks: { "spotify:track:TitreA": cover("red") },
+          artists: { "Artiste test": cover("blue") },
+          albums: {},
+        },
+      }),
+    );
+    await page.goto("/");
+    await page.getByLabel(/Dépose ton export Spotify/).setInputFiles({
+      name: "my_spotify_data.zip",
+      mimeType: "application/zip",
+      buffer: exportZip(),
+    });
+    const mosaic = page.getByRole("region", { name: "Tes n°1 de la période" });
+    await expect(mosaic.locator("img")).toHaveCount(2, { timeout: 60_000 });
+    await expect(mosaic.locator(`img[src="${cover("blue")}"]`)).toBeVisible();
+    await expect(page.getByRole("region", { name: "Tops" }).locator("img").first()).toHaveAttribute(
+      "src",
+      cover("red"),
+    );
   });
-  const tiles = page.getByRole("region", { name: "Chiffres clés" });
-  await expect(tiles).toContainText("5écoutes", { timeout: 60_000 });
-
-  await page.getByRole("button", { name: "Enregistrer dans mon compte" }).click();
-  await expect(page.getByText(/7 nouvelles/)).toBeVisible();
-
-  // Rechargement : l'historique vient maintenant du compte, sans redéposer le fichier.
-  await page.reload();
-  await expect(page.getByText("7 écoutes enregistrées")).toBeVisible({ timeout: 60_000 });
-  await expect(tiles).toContainText("5écoutes");
-
-  await page.getByRole("button", { name: "Supprimer mes données d'écoute" }).click();
-  await page.getByRole("button", { name: "Oui, tout supprimer" }).click();
-  await expect(page.getByText("7 écoutes supprimées de ton compte.")).toBeVisible();
 });

@@ -5,6 +5,7 @@ import { AccountPanel } from "./account-panel";
 import { CollectPanel } from "./collect-panel";
 import { ExportDrop } from "./export-drop";
 import { formatInt } from "./format";
+import { ImagesProvider } from "./images";
 import { PeriodPicker } from "./period-picker";
 import { StatsDashboard } from "./stats-dashboard";
 import { useStats } from "./use-stats";
@@ -97,7 +98,9 @@ export function StatsApp({ loggedIn }: { loggedIn: boolean }) {
 
       {collect}
       <PeriodPicker period={period} years={years} onChange={selectPeriod} />
-      <StatsDashboard stats={stats} period={period} />
+      <ImagesProvider stats={stats} enabled={loggedIn}>
+        <StatsDashboard stats={stats} period={period} />
+      </ImagesProvider>
 
       <AccountPanel
         loggedIn={loggedIn}

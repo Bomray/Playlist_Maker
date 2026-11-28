@@ -82,7 +82,10 @@ installable en PWA) de stats d'écoute Spotify et de conversion de playlists ent
        préférence minutes / heures (`components/stats/use-duration-unit.tsx`, clé
        `wavl-duration-unit`), mosaïque des n°1 (dégradés en attendant les images), minuteur
        `core/stats/schedule.ts` (minute 17 UTC ; attente et rechargement si le relevé tarde).
-     - 3. Images : pochettes et photos Spotify remplies en tâche de fond, cache en base.
+     - ✅ 3. Images : migration 0003 (`tracks.image_url`, table `artists`), remplissage par
+       `POST /api/cron/images` (2ᵉ étape de `collect.yml`, 4 min max, token d'application,
+       ~6 req/s, arrêt sur 429, les plus écoutés d'abord), lecture par `POST /api/stats/images`
+       (connecté), affichage `components/stats/images.tsx` (fondu sur le dégradé).
      - 4. Pages artiste, album et titre : courbe d'évolution et calendrier jour par jour.
      - 5. Tops complets : recherche, onglets titres / artistes / albums, chargement au défilement.
      - 6. Conversion au nouveau style (pochettes qui se retournent quand un titre est trouvé).

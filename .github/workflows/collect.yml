@@ -20,7 +20,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 12
     steps:
       - name: Appeler /api/cron/collect
         env:
@@ -35,4 +35,16 @@ jobs:
           curl --silent --show-error --fail-with-body --max-time 320 \
             -X POST -H "Authorization: Bearer $CRON_SECRET" \
             "$APP_URL/api/cron/collect"
+          echo
+      # Pochettes et photos manquantes (4 min au plus) ; un échec ne compte pas comme celui
+      # de la collecte, déjà faite à l'étape précédente.
+      - name: Appeler /api/cron/images
+        continue-on-error: true
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ vars.APP_URL || 'https://playlist-maker-bomray.vercel.app' }}
+        run: |
+          curl --silent --show-error --fail-with-body --max-time 320 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/images"
           echo
